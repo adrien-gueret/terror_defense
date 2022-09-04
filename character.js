@@ -6,7 +6,7 @@ const CHARACTER_DELTA_Y = -6;
 const CHARACTER_CONF = {
     boy: { baseSpeed: 14, baseCourage: 500, awardedSoulstones: 5 },
     adult: { baseSpeed: 18, baseCourage: 1000, awardedSoulstones: 10 },
-    soldier: { baseSpeed: 22, baseCourage: 1500, awardedSoulstones: 20 },
+    soldier: { baseSpeed: 20, baseCourage: 1500, awardedSoulstones: 20 },
 };
 
 function Character(character) {	
@@ -17,7 +17,7 @@ function Character(character) {
    
     const maxCourage = Math.min((baseCourage + 100) * 10, baseCourage * (Math.floor(createdCharacterCount / 10) + 1));
     let currentCourage = maxCourage;
-    let currentSpeed = Math.min((baseSpeed + 2) * 5, baseSpeed + Math.floor(createdCharacterCount / 5));
+    let currentSpeed = Math.min((baseSpeed + 2) * 5, baseSpeed + Math.floor(createdCharacterCount / 8));
     let clock = null;
     character.isFleeing = false;
 
