@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr_FR">
+    <head>
+        <title>Terror Defense</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=0.86, shrink-to-fit=no" />
+		<link href="./images/favicon.png?v1" rel="icon shortcut" />
+		
+		<style>
+			body, html {
+				margin: 0;
+				padding: 0;
+				position: relative;
+				background-color: #333;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-width: 960px;
+				min-height: 100vh;
+			}
+		
+			jsglib-game {
+				background-color: transparent;
+				overflow: visible;
+				margin: auto;
+				padding: 0;
+				opacity: 1;
+				transition: opacity 333ms;
+				transform-origin: center;
+				line-height: 0;
+				overflow: hidden;
+			}
+
+			#board {
+				background: #7bad2c;
+			}
+
+			.tile {
+				margin: 0;
+				padding: 0;
+				border-radius: 0;
+				display: inline-block;
+				position: relative;
+				background-color: transparent;
+				background-image: url(./images/tiles.png);
+				z-index: 0;
+				width: 16px;
+				height: 16px;
+				pointer-events: none;
+			}
+
+			.tile.built,
+			.ghost-unlocked #shop .tile.ghost,
+			.bat-unlocked #shop .tile.bat {
+				animation: pulsate 0.5s ease-in-out 1 both;
+			}
+
+			#board .tile.ghost.built {
+				animation:
+					pulsate 0.5s ease-in-out 1 both,
+					spriteAnim 1s steps(2) infinite,
+					fade 5s ease-in-out infinite both;
+			}
+
+			#board .tile.bat.built {
+				animation:
+					pulsate 0.5s ease-in-out 1 both,
+					spriteAnim 1s steps(2) infinite;
+			}
+
+			#shop .tile:not(.soulstone,.scaryometer,.heart),
+			.build-mode .tile.buildable,
+			.remove-mode .tile.flower,
+			.remove-mode .tile.soulflower,
+			.remove-mode .tile.grass,
+			.remove-mode .tile.built,
+			.tile.temp {
+				pointer-events: all;
+				cursor: pointer;
+			}
+
+			jsglib-game:not(.ghost-unlocked) #shop .tile.ghost,
+			jsglib-game:not(.bat-unlocked) #shop .tile.bat {
+				cursor: default;
+				opacity: .4;
+			}
+
+			.ghost-unlocked #ghost-lock,
+			.bat-unlocked #bat-lock {
+				display: none;
+			}
+
+			#shop .tile:hover,
+			.build-mode .tile.buildable:hover,
+			.remove-mode .tile.flower:hover,
+			.remove-mode .tile.soulflower:hover,
+			.remove-mode .tile.grass:hover,
+			.remove-mode .tile.built:hover,
+			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave,
+			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile.ghost,
+			.remove-mode .tile.warning,
+			.tile.temp:hover {
+				outline: 1px solid black;
+				z-index: 10;
+			}
+
+			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile.ghost,
+			.remove-mode .tile.warning {
+				animation: none !important;
+			}
+
+			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave,
+			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile.ghost,
+			.remove-mode .tile.warning {
+				background-position: 0 0 !important;
+			}
+
+			.remove-mode #board .tile {
+				outline-color: rgb(173, 30, 30) !important;
+			}
+
+			.tuto-mode #board, .end #board {
+				pointer-events: none;
+				filter: brightness(.4);
+			}
+
+			.tile.path { background-position: -16px 0; }
+			.tile.soulflower { background-position: -32px 0; }
+			.tile.flower { background-position: -48px 0; }
+			.tile.fence { background-position: -64px 0; }
+			.tile.tree { background-position: -48px -16px; }
+			.tile.tree.var { background-position: -64px -16px; }
+			.tile.tombstone { background-position: 0 -16px; }
+			.tile.tombstone.lvl2 { background-position: -16px -16px; }
+			.tile.tombstone.lvl3 { background-position: -32px -16px; }
+			.tile.grave { background-position: 0 -32px; }
+			.tile.grave.lvl2 { background-position: -16px -32px; }
+			.tile.grave.lvl3 { background-position: -32px -32px; }
+			.tile.scaryometer { background-position: 0 -64px; }
+			.tile.sound { background-position: 0 -80px; }
+			.tile.sound.on { background-position: -16px -80px; }
+			.tile.heart { background-position: -32px -80px; }
+			.tile.heart.empty { background-position: -48px -80px; opacity: .5; animation: shake 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both; }
+			.tile.ghost { background-position: -16px -64px; }
+			.tile.bat { background-position: -48px -64px; }
+			.tile.soulstone {
+				width: 11px;
+				height: 13px;
+				background-position: -64px -48px;
+				vertical-align: middle;
+				cursor: help;
+				pointer-events: all;
+			}
+			.tile.scaryometer {
+				width: 14px;
+				height: 11px;
+				vertical-align: middle;
+				cursor: help;
+				pointer-events: all;
+			}
+
+			.tile.anim {
+				animation-name: spriteAnim; 
+				animation-timing-function: steps(2);
+				animation-iteration-count: infinite;
+				animation-duration: 500ms;
+				background-blend-mode: difference;
+			}
+
+			.tile.upgradable {
+				animation-name: readyToUpgrade; 
+				animation-timing-function: ease-in;
+				animation-iteration-count: infinite;
+				animation-direction: alternate;
+				animation-duration: 1s;
+				border-radius: 5px;
+				cursor: pointer;
+				pointer-events: all;
+			}
+
+			.end #board .tile { pointer-events: none ;}
+
+			.end #board .tile.upgradable, .end #board .tile.bat, .end #board .tile.ghost {
+				animation: none;
+			}
+
+			.tile.left { transform: scaleX(-1); }
+
+			.tile.boy {
+				--from: -48px -32px;
+				--to: -80px -32px;
+			}
+
+			.tile.adult {
+				--from: 0px -48px;
+				--to: -32px -48px;
+			}
+
+			.tile.soldier {
+				--from: -32px -48px;
+				--to: -64px -48px;
+			}
+
+			.tile.ghost {
+				--from: -16px -64px;
+				--to: -48px -64px;
+			}
+
+			.tile.bat {
+				--from: -48px -64px;
+				--to: -80px -64px;
+			}
+
+			.tile:not(.tombstone)+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave.temp:hover,
+			.tile:not(.tombstone)+.tile.ghost.temp:hover,
+			.tile.temp.nope {
+				filter: hue-rotate(280deg);
+				opacity: .5;
+				cursor: not-allowed;
+			}
+
+			jsglib-element { z-index: 10; }
+
+			footer {
+				background: #111;
+				height: 51px;
+				color: #fff;
+				font-family: monospace;
+				padding: 4px;
+			}
+
+			.end footer { display: none; }
+
+			#soulstoneCountDOM {
+				min-width: 32px;
+    			display: inline-block;
+			}
+
+			.scaryometerContainer {
+				min-width: 32px;
+    			display: inline-block;
+				margin-left: auto;
+			}
+
+			#shopInner {
+				display: flex;
+				align-items: center;
+			}
+
+			#shop menu {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				margin-left: 12px;
+				display: flex;
+				flex-grow: 1;
+			}
+
+			#shop li + li {
+				margin-left: 4px;
+			}
+
+			#shop li:last-child {
+				margin-left: auto;
+				margin-right: 4px;
+			}
+
+			#shop button, .tuto-button {
+				border: 1px solid #111;
+				padding: 0;
+				background-color: transparent;
+				width: 16px;
+				height: 16px;
+				cursor: pointer;
+			}
+
+			#shop button { box-sizing: content-box; }
+
+			#shop button:not(.selected):hover {
+				border-color: gold;				
+			}
+
+			#lifeContainer {
+				display: none;
+				align-items: center;
+				flex-grow: 1;
+				justify-content: flex-end;
+				padding-right: 8px;
+			}
+
+			.tuto-finished #lifeContainer {
+				display: flex;
+			}
+
+			.locked {
+				font-size: .5rem;
+				
+			}
+
+			.tuto {
+				font-family: monospace;
+				position: fixed;
+				left: 8px;
+				right: 8px;
+				top: 0;
+				background: #000;
+				color: #fff;
+				border: 2px solid #fff;
+				z-index: 100;
+				line-height: normal;
+				padding: 8px;
+				overflow: hidden;
+				transition: transform 333ms ease-in-out;
+				transform: translateY(-100vh);
+			}
+
+			.tuto p {
+				margin: 0;
+				padding: 0;
+			}
+
+			.tuto b, #graveLeftCount, #treeLeftCount { color: cyan; }
+
+			.tuto-button {
+				width: 32px;
+				height: 16px;
+				text-align: center;
+				color: white;
+				border: 0;
+				animation-name: clickMe; 
+				animation-timing-function: ease-in-out;
+				animation-iteration-count: infinite;
+				animation-direction: alternate;
+				animation-duration: 333ms;
+				position: absolute;
+				right: 8px;
+				bottom: 0;
+			}
+
+			.tuto-button:hover {
+				color: gold;
+			}
+
+			.tuto-step-1 #shop button.tile:not(.sound),
+			.tuto-step-2 #shop button.tile:not(.none,.sound),
+			.tuto-step-3 #shop button.tile:not(.soulflower,.sound),
+			.tuto-step-4 #shop button.tile:not(.tree,.sound),
+			.tuto-step-7-success #shop button.tile:not(.sound),
+			.tuto-step-7-failure #shop button.tile:not(.sound),
+			.tuto-step-8 #shop button.tile:not(.sound) {
+				pointer-events: none;
+				cursor: default;
+				filter: grayscale(1);
+				opacity: .8 !important;
+			}
+
+			.tuto-step-2 #shop button.tile.none,
+			.tuto-step-3 #shop button.soulflower,
+			.tuto-step-4 #shop button.tree {
+				animation-name: clickMe; 
+				animation-timing-function: ease-in-out;
+				animation-iteration-count: infinite;
+				animation-direction: alternate;
+				animation-duration: 333ms;
+				outline: 1px solid cyan;
+			}
+
+			.tuto-step-2 #shop button.tile.none:hover,.tuto-step-2 #shop button.tile.none.selected,
+			.tuto-step-3 #shop button.tile.soulflower:hover,.tuto-step-3 #shop button.tile.soulflower.selected,
+			.tuto-step-4 #shop button.tile.tree:hover,.tuto-step-4 #shop button.tile.tree.selected {
+				outline: none;
+			}
+
+			.tuto-mode.tuto-step-1 .tuto.step1,
+			.tuto-mode.tuto-step-2 .tuto.step2,
+			.tuto-mode.tuto-step-3 .tuto.step3,
+			.tuto-mode.tuto-step-4 .tuto.step4,
+			.tuto-mode.tuto-step-5 .tuto.step5,
+			.tuto-mode.tuto-step-6 .tuto.step6,
+			.tuto-mode.tuto-step-7-success .tuto.step7.success,
+			.tuto-mode.tuto-step-7-failure .tuto.step7.failure,
+			.tuto-mode.tuto-step-8 .tuto.step8,
+			.end .tuto.stepEnd {
+				transform: translateY(100px);
+			}
+
+			[data-mode="remove"] {
+				margin-left: 8px;
+			}
+
+			#shop button.selected {
+				border-color: #eee;				
+			}
+
+			.item-description {
+				font-size: .5rem;
+				line-height: .6rem;
+				margin: 0;
+				padding: 0;
+				margin-top: 2px;
+				display: none;
+			}
+
+			.item-description p {
+				font-size: .6rem;
+				margin: 0;
+			}
+
+			#shop.none .item-description.none,
+			#shop.tree .item-description.tree,
+			#shop.soulflower .item-description.soulflower,
+			#shop.ghost .item-description.ghost,
+			#shop.bat .item-description.bat,
+			#shop.tombstone.lvl1:not(.upgradable) .item-description.tombstone.lvl1,
+			#shop.tombstone.lvl1.upgradable .item-description.tombstone.lvl2,
+			#shop.tombstone.lvl2.upgradable .item-description.tombstone.lvl3,
+			#shop.grave.lvl1:not(.upgradable) .item-description.grave.lvl1,
+			#shop.grave.lvl1.upgradable .item-description.grave.lvl2,
+			#shop.grave.lvl2.upgradable .item-description.grave.lvl3,
+			#shop.sound .item-description.sound
+			{ display:block; }
+
+			.negative, .locked { color: red; }
+			.positive { color: lightgreen; }
+
+			#pictureLink {
+				color: cyan;
+				display: inline-block;
+				text-decoration: underline;
+				text-underline-offset: 3px;
+				text-decoration-color: transparent;
+    			transition: all 400ms ease-in-out;
+			}
+
+			#pictureLink:hover {
+				text-decoration-color: cyan;
+			}
+
+
+			@keyframes spriteAnim {
+			  0% { background-position: var(--from); }
+			  100% { background-position: var(--to); }
+			}
+
+			@keyframes readyToUpgrade {
+				0% { filter: sepia(0) hue-rotate(0); }
+				100% { filter: sepia(1) hue-rotate(-180deg); }
+			}
+
+			@keyframes clickMe {
+				0% { transform: translateX(-2px); }
+				1000% { transform: translateX(2px); }
+			}
+
+			@keyframes pulsate {
+				0% { transform: scale(.8); }
+				50% { transform: scale(1.2); }
+				100% { transform: scale(1); }
+			}
+
+			@keyframes fade {
+				0% { opacity: .8; }
+				50% { opacity: .3; }
+				100% { opacity: 1; }
+			}
+
+			@keyframes shake {
+				0%, 100% {
+					transform: rotate(0deg);
+					transform-origin: 50% 100%;
+				}
+				10% { transform: rotate(2deg); }
+				20%, 40%, 60% { transform: rotate(-4deg); }
+				30%, 50%, 70% { transform: rotate(4deg); }
+				80% { transform: rotate(-2deg); }
+				90% { transform: rotate(2deg); }
+			}
+		</style>
+    </head>
+    <body>
+		<jsglib-game width="480" height="380" zoom="2">
+			<section id="tutoContainer">
+				<aside class="tuto step1">
+					<p>
+						Welcome to your graveyard! Your goal is to make it the scariest as possible. The scary-o-meter (<span class="tile scaryometer" title="Scary-o-meter" aria-label="Scary-o-meter"></span>),
+						on the bottom right of the screen, is currently negative...
+						<button class="tuto-button" data-step="2">▶</button>
+					</p>
+				</aside>
+
+				<aside class="tuto step2">
+					<p>
+						It's because your graveyard is not very spooky for now. These flowers are too pretty, so let's try to
+						remove <b>3</b> of them! But beware, it'll cost you some soulstones <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>.
+					</p>
+				</aside>
+
+				<aside class="tuto step3">
+					<p>
+						Good! You can increase the scary-o-meter of your graveyard by removing flowers, even if they regrow over time.
+						Note that blue ones are soulflowers: they generate soulstones, so you may want to keep or buy them...
+						Let's try to plant <b>5</b> soulflowers.
+					</p>
+				</aside>
+
+				<aside class="tuto step4">
+					<p>
+						Well done! But with all these flowers, your graveyard is definitively not scary... Let's try to add <b>3</b>
+						dead trees to make it gloomier!
+					</p>
+				</aside>
+
+				<aside class="tuto step5">
+					<p>
+						It's so better like that! The scary-o-meter is still negative, so you must continue like that! You can now build tombstones
+						and graves, I let you discover them... Try to put the scary-o-meter at <b>0 or above</b>!
+						<button class="tuto-button">▶</button>
+					</p>
+				</aside>
+
+				<aside class="tuto step6">
+					<p>
+						Very well done! Do you know that tombstones and graves can be upgraded? Keep an eye on them: if they're glowing, they can upgrade!
+						But wait, somebody is coming... If your graveyard is spooky enough, he'll run away!
+						<button class="tuto-button">▶</button>
+					</p>
+				</aside>
+
+				<aside class="tuto step7 success">
+					<p>
+						Did you see how he ran away? You earn some soulstones every time someone is scared to death like that. Some humans are braver than others,
+						and the more humans there are in the graveyard, the more reassured they feel.
+						<button class="tuto-button" data-step="8">▶</button>
+					</p>
+				</aside>
+
+				<aside class="tuto step7 failure">
+					<p>
+						Oh, he managed to leave your graveyard without running away... You earn some soulstones every time someone is scared to death. Some humans are braver than others,
+						and the more humans there are in the graveyard, the more reassured they feel.
+						<button class="tuto-button" data-step="8">▶</button>
+					</p>
+				</aside>
+
+				<aside class="tuto step8">
+					<p>
+						From now on, everytime an human leaves your graveyard without running away, you'll lose a life.
+						So make your graveyard the spookiest as possible!
+						Good luck, and have fun!
+						<button class="tuto-button">▶</button>
+					</p>
+				</aside>
+
+				<aside class="tuto stepEnd">
+					<p>
+						Game over! Your scary-o-meter value is
+						<span class="tile scaryometer" title="Scary-o-meter" aria-label="Scary-o-meter"></span>x 
+						<span id="scaryometerEndDOM">0</span><br />
+						You can click <a id="pictureLink" download="terror-defense-graveyard.png">on this link</a> to get a picture of your graveyard and share it to everyone!<br />
+						Or click the arrow to replay.
+						<button class="tuto-button">▶</button>
+					</p>
+				</aside>
+			</section>
+
+			<main id="board"></main>
+			<footer id="shop">
+				<div id="shopInner">
+					<div>
+						<span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>x 
+						<span id="soulstoneCountDOM">0</span>
+					</div>
+
+					<menu>
+						<li>
+							<button class="tile soulflower buildable" aria-label="Buy soulflower"></button>
+						</li>
+						<li>
+							<button class="tile tree buildable" aria-label="Buy tree"></button>
+						</li>
+						<li>
+							<button class="tile tombstone lvl1 buildable" aria-label="Buy tombstone"></button>
+						</li>
+						<li>
+							<button class="tile grave lvl1 buildable" aria-label="Buy grave"></button>
+						</li>
+						<li>
+							<button class="tile bat buildable" aria-label="Buy bat"></button>
+						</li>
+						<li>
+							<button class="tile ghost buildable" aria-label="Buy ghost"></button>
+						</li>
+						<li>
+							<button data-mode="remove" class="tile none buildable" aria-label="Buy 'remove item'"></button>
+						</li>
+						<li id="lifeContainer">
+							<span class="tile heart"></span>
+							<span class="tile heart"></span>
+							<span class="tile heart"></span>
+						</li>
+						<li>
+							<button id="soundButton" class="tile sound" aria-label="Toggle sound"></button>
+						</li>
+					</menu>
+
+					<div class="scaryometerContainer">
+						<span class="tile scaryometer" title="Scary-o-meter" aria-label="Scary-o-meter"></span>x 
+						<span id="scaryometerDOM">0</span>
+					</div>
+				</div>
+				<div>
+					<aside class="item-description soulflower">
+						<p>
+							Soulflower: 5 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="negative">-1</b>
+						</p>
+	
+						<p>A beautiful and reassuring flower, but it generates 1 soulstone for your graveyard every 4 seconds.</p>
+					</aside>
+
+					<aside class="item-description none">
+						<p>
+							Remove item: 3 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+						</p>
+	
+						<p>Flowers are too pretty for your spooky graveyard!</p>
+					</aside>
+
+					<aside class="item-description tree">
+						<p>
+							Dead tree: 10 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+2</b>
+						</p>
+	
+						<p>
+							A dead tree adds a nice touch to your graveyard.
+						</p>
+					</aside>
+	
+					<aside class="item-description tombstone lvl1">
+						<p>
+							Tomb stone: 20 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+1</b>
+						</p>
+	
+						<p>
+							A classic and not so scary tomb stone. Can be upgraded.
+						</p>
+					</aside>
+	
+					<aside class="item-description tombstone lvl2">
+						<p>
+							Old tomb stone: 30 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+2</b>
+						</p>
+	
+						<p>
+							A scarier tomb stone, made with creepy wood. Can be upgraded.
+						</p>
+					</aside>
+	
+					<aside class="item-description tombstone lvl3">
+						<p>
+							Evil tomb stone: 40 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+3</b>
+						</p>
+	
+						<p>
+							This tomb stone seems to be tied to hell itself. So spooky!
+						</p>
+					</aside>
+	
+					<aside class="item-description grave lvl1">
+						<p>
+							Marble grave: 15 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+2</b>
+						</p>
+	
+						<p>
+							Must be placed just below a tomb stone. Can be upgraded.
+						</p>
+					</aside>
+	
+					<aside class="item-description grave lvl2">
+						<p>
+							Fresh grave: 25 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+3</b>
+						</p>
+	
+						<p>
+							It looks like it has just been dug, you can almost feel the corpse underneath... Can be upgraded.
+						</p>
+					</aside>
+	
+					<aside class="item-description grave lvl3">
+						<p>
+							Cracked grave: 35 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+4</b>
+						</p>
+	
+						<p>
+							The occupant of this grave seems to want to get out...
+						</p>
+					</aside>
+
+					<aside class="item-description bat">
+						<p>
+							Bat: 30 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+5</b>
+							<span id="bat-lock">
+								| <span class="locked"><b>Locked:</b> get at least 12 trees to unlock <i>(<span id="treeLeftCount">12</span> left!)</i></span>
+							</span>
+						</p>
+	
+						<p>
+							People don't like bats, so let's put some! Must be placed just above a dead tree.
+						</p>
+					</aside>
+
+					<aside class="item-description ghost">
+						<p>
+							Ghost: 75 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							|
+							Scary-o-meter: <b class="positive">+10</b>
+							<span id="ghost-lock">
+								| <span class="locked"><b>Locked:</b> get at least 8 graves to unlock <i>(<span id="graveLeftCount">8</span> left!)</i></span>
+							</span>
+						</p>
+	
+						<p>
+							What scarier than a ghost? Must be placed on the right of a tomb stone linked to a grave.
+						</p>
+					</aside>
+
+					<aside class="item-description sound">
+						<p>
+							Toggle sound: 0 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+						</p>
+	
+						<p>
+							At first, I thought about increasing the scary-o-meter while the spooky soundscape is enabled but... it seems to be a terrible game design idea.
+						</p>
+					</aside>
+				</div>
+			</footer>
+		</jsglib-game>
+
+		<script type="module" src="index.js"></script>
+    </body>
+</html>
