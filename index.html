@@ -168,7 +168,7 @@
 				background-blend-mode: difference;
 			}
 
-			.tile.upgradable {
+			.tile.upgradable:not(.lvl3) {
 				animation-name: readyToUpgrade; 
 				animation-timing-function: ease-in;
 				animation-iteration-count: infinite;
@@ -179,7 +179,7 @@
 				pointer-events: all;
 			}
 
-			.end #board .tile { pointer-events: none ;}
+			.end #board .tile, #tutoContainer .tile { pointer-events: none ;}
 
 			.end #board .tile.upgradable, .end #board .tile.bat, .end #board .tile.ghost {
 				animation: none;
@@ -483,7 +483,7 @@
 			<section id="tutoContainer">
 				<aside class="tuto step1">
 					<p>
-						Welcome to your graveyard! Your goal is to make it the scariest as possible. The scary-o-meter (<span class="tile scaryometer" title="Scary-o-meter" aria-label="Scary-o-meter"></span>),
+						Welcome to your graveyard! Your goal is to make it the scariest as possible. The scary-o-meter <span class="tile scaryometer"></span>,
 						on the bottom right of the screen, is currently negative...
 						<button class="tuto-button" data-step="2">▶</button>
 					</p>
@@ -491,15 +491,15 @@
 
 				<aside class="tuto step2">
 					<p>
-						It's because your graveyard is not very spooky for now. These flowers are too pretty, so let's try to
-						remove <b>3</b> of them! But beware, it'll cost you some soulstones <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>.
+						It's because your graveyard is not very spooky for now. These white flowers <span class="tile flower"></span> are too pretty, so let's try to
+						remove <b>3</b> of them! But beware, it'll cost you some soulstones <span class="tile soulstone"></span>.
 					</p>
 				</aside>
 
 				<aside class="tuto step3">
 					<p>
 						Good! You can increase the scary-o-meter of your graveyard by removing flowers, even if they regrow over time.
-						Note that blue ones are soulflowers: they generate soulstones, so you may want to keep or buy them...
+						Note that blue ones are soulflower <span class="tile soulflower"></span>. They generate soulstones, so you may want to keep or buy them...
 						Let's try to plant <b>5</b> soulflowers.
 					</p>
 				</aside>
@@ -507,21 +507,21 @@
 				<aside class="tuto step4">
 					<p>
 						Well done! But with all these flowers, your graveyard is definitively not scary... Let's try to add <b>3</b>
-						dead trees to make it gloomier!
+						dead trees <span class="tile tree"></span> to make it gloomier!
 					</p>
 				</aside>
 
 				<aside class="tuto step5">
 					<p>
-						It's so better like that! The scary-o-meter is still negative, so you must continue like that! You can now build tombstones
-						and graves, I let you discover them... Try to put the scary-o-meter at <b>0 or above</b>!
+						It's so better like that! The scary-o-meter is still negative, so you must continue like that!<br />You can now build tomb stones
+						<span class="tile tombstone"></span> and graves <span class="tile grave"></span>, I let you discover them...<br />Try to put the scary-o-meter at <b>0 or above</b>!
 						<button class="tuto-button">▶</button>
 					</p>
 				</aside>
 
 				<aside class="tuto step6">
 					<p>
-						Very well done! Do you know that tombstones and graves can be upgraded? Keep an eye on them: if they're glowing, they can upgrade!
+						Very well done! Do you know that tombstones and graves can be upgraded? Keep an eye on them: if they're glowing <span class="tile tombstone upgradable"></span>, they can upgrade!
 						But wait, somebody is coming... If your graveyard is spooky enough, he'll run away!
 						<button class="tuto-button">▶</button>
 					</p>
@@ -555,7 +555,7 @@
 				<aside class="tuto stepEnd">
 					<p>
 						Game over! Your scary-o-meter value is
-						<span class="tile scaryometer" title="Scary-o-meter" aria-label="Scary-o-meter"></span>x 
+						<span class="tile scaryometer"></span>x 
 						<span id="scaryometerEndDOM">0</span><br />
 						You can click <a id="pictureLink" download="terror-defense-graveyard.png">on this link</a> to get a picture of your graveyard and share it to everyone!<br />
 						Or click the arrow to replay.
@@ -568,7 +568,7 @@
 			<footer id="shop">
 				<div id="shopInner">
 					<div>
-						<span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>x 
+						<span class="tile soulstone" title="Soulstone"></span>x 
 						<span id="soulstoneCountDOM">0</span>
 					</div>
 
@@ -605,14 +605,14 @@
 					</menu>
 
 					<div class="scaryometerContainer">
-						<span class="tile scaryometer" title="Scary-o-meter" aria-label="Scary-o-meter"></span>x 
+						<span class="tile scaryometer" title="Scary-o-meter"></span>x 
 						<span id="scaryometerDOM">0</span>
 					</div>
 				</div>
 				<div>
 					<aside class="item-description soulflower">
 						<p>
-							Soulflower: 5 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Soulflower: 5 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="negative">-1</b>
 						</p>
@@ -622,7 +622,7 @@
 
 					<aside class="item-description none">
 						<p>
-							Remove item: 3 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Remove item: 3 <span class="tile soulstone"></span>
 						</p>
 	
 						<p>Flowers are too pretty for your spooky graveyard!</p>
@@ -630,7 +630,7 @@
 
 					<aside class="item-description tree">
 						<p>
-							Dead tree: 10 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Dead tree: 10 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+2</b>
 						</p>
@@ -642,7 +642,7 @@
 	
 					<aside class="item-description tombstone lvl1">
 						<p>
-							Tomb stone: 20 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Tomb stone: 20 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+1</b>
 						</p>
@@ -654,7 +654,7 @@
 	
 					<aside class="item-description tombstone lvl2">
 						<p>
-							Old tomb stone: 30 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Old tomb stone: 30 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+2</b>
 						</p>
@@ -666,7 +666,7 @@
 	
 					<aside class="item-description tombstone lvl3">
 						<p>
-							Evil tomb stone: 40 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Evil tomb stone: 40 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+3</b>
 						</p>
@@ -678,7 +678,7 @@
 	
 					<aside class="item-description grave lvl1">
 						<p>
-							Marble grave: 15 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Marble grave: 15 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+2</b>
 						</p>
@@ -690,7 +690,7 @@
 	
 					<aside class="item-description grave lvl2">
 						<p>
-							Fresh grave: 25 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Fresh grave: 25 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+3</b>
 						</p>
@@ -702,7 +702,7 @@
 	
 					<aside class="item-description grave lvl3">
 						<p>
-							Cracked grave: 35 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Cracked grave: 35 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+4</b>
 						</p>
@@ -714,7 +714,7 @@
 
 					<aside class="item-description bat">
 						<p>
-							Bat: 30 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Bat: 30 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+5</b>
 							<span id="bat-lock">
@@ -729,7 +729,7 @@
 
 					<aside class="item-description ghost">
 						<p>
-							Ghost: 75 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Ghost: 75 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+10</b>
 							<span id="ghost-lock">
@@ -744,7 +744,7 @@
 
 					<aside class="item-description sound">
 						<p>
-							Toggle sound: 0 <span class="tile soulstone" title="Soulstone" aria-label="Soulstone"></span>
+							Toggle sound: 0 <span class="tile soulstone"></span>
 						</p>
 	
 						<p>
