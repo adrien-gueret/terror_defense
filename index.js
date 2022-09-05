@@ -229,6 +229,9 @@ const toggleSound = () => {
 	};
 
 	const prepareTileToBeUpgradable = (tile, timeout = 0) => {
+		if (tile.prepareUpgradeClock) {
+			window.clearTimeout(tile.prepareUpgradeClock);
+		}
 		tile.prepareUpgradeClock = window.setTimeout(() => {
 			tile.classList.add('upgradable');
 		}, timeout);
