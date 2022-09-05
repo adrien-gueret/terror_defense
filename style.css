@@ -1,0 +1,470 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 960px;
+    min-height: 100vh;
+}
+
+jsglib-game {
+    background-color: transparent;
+    overflow: visible;
+    margin: auto;
+    padding: 0;
+    opacity: 1;
+    transition: opacity 333ms;
+    transform-origin: center;
+    line-height: 0;
+    overflow: hidden;
+}
+
+#board {
+    background: #7bad2c;
+}
+
+.tile {
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    display: inline-block;
+    position: relative;
+    background-color: transparent;
+    background-image: url(./images/tiles.png);
+    z-index: 0;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+}
+
+.tile.built,
+.ghost-unlocked #shopWrapper .tile.ghost,
+.bat-unlocked #shopWrapper .tile.bat {
+    animation: pulsate 0.5s ease-in-out 1 both;
+}
+
+#board .tile.ghost.built {
+    animation:
+        pulsate 0.5s ease-in-out 1 both,
+        spriteAnim 1s steps(2) infinite,
+        fade 5s ease-in-out infinite both;
+}
+
+#board .tile.bat.built {
+    animation:
+        pulsate 0.5s ease-in-out 1 both,
+        spriteAnim 1s steps(2) infinite;
+}
+
+#shopWrapper .tile:not(.soulstone,.scaryometer,.heart),
+.build-mode .tile.buildable,
+.remove-mode .tile.flower,
+.remove-mode .tile.soulflower,
+.remove-mode .tile.grass,
+.remove-mode .tile.built,
+.tile.temp {
+    pointer-events: all;
+    cursor: pointer;
+}
+
+jsglib-game:not(.ghost-unlocked) #shopWrapper .tile.ghost,
+jsglib-game:not(.bat-unlocked) #shopWrapper .tile.bat {
+    cursor: default;
+    opacity: .4;
+}
+
+.ghost-unlocked #ghostLock,
+.bat-unlocked #batLock {
+    display: none;
+}
+
+#shopWrapper .tile:hover,
+.build-mode .tile.buildable:hover,
+.build-mode .tile.upgradable:hover,
+.remove-mode .tile.flower:hover,
+.remove-mode .tile.soulflower:hover,
+.remove-mode .tile.grass:hover,
+.remove-mode .tile.built:hover,
+.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave,
+.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile.ghost,
+.remove-mode .tile.warning,
+.tile.temp:hover {
+    outline: 1px solid black;
+    z-index: 10;
+}
+
+.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile.ghost,
+.remove-mode .tile.warning {
+    animation: none !important;
+}
+
+.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave,
+.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile.ghost,
+.remove-mode .tile.warning {
+    background-position: 0 0 !important;
+}
+
+.remove-mode #board .tile:not(.upgradable:hover) {
+    outline-color: rgb(173, 30, 30) !important;
+}
+
+.tuto-mode #board, .end #board {
+    pointer-events: none;
+    filter: brightness(.4);
+}
+
+.tile.path { background-position: -16px 0; }
+.tile.soulflower { background-position: -32px 0; }
+.tile.flower { background-position: -48px 0; }
+.tile.fence { background-position: -64px 0; }
+.tile.tree { background-position: -48px -16px; }
+.tile.tree.var { background-position: -64px -16px; }
+.tile.tombstone { background-position: 0 -16px; }
+.tile.tombstone.lvl2 { background-position: -16px -16px; }
+.tile.tombstone.lvl3 { background-position: -32px -16px; }
+.tile.grave { background-position: 0 -32px; }
+.tile.grave.lvl2 { background-position: -16px -32px; }
+.tile.grave.lvl3 { background-position: -32px -32px; }
+.tile.scaryometer { background-position: 0 -64px; }
+.tile.sound { background-position: 0 -80px; }
+.tile.sound.on { background-position: -16px -80px; }
+.tile.heart { background-position: -32px -80px; }
+.tile.heart.empty { background-position: -48px -80px; opacity: .5; animation: shake 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both; }
+.tile.ghost { background-position: -16px -64px; }
+.tile.bat { background-position: -48px -64px; }
+.tile.soulstone {
+    width: 11px;
+    height: 13px;
+    background-position: -64px -48px;
+    vertical-align: middle;
+    cursor: help;
+    pointer-events: all;
+}
+.tile.scaryometer {
+    width: 14px;
+    height: 11px;
+    vertical-align: middle;
+    cursor: help;
+    pointer-events: all;
+}
+
+.tile.anim {
+    animation-name: spriteAnim; 
+    animation-timing-function: steps(2);
+    animation-iteration-count: infinite;
+    animation-duration: 500ms;
+    background-blend-mode: difference;
+}
+
+.tile.upgradable:not(.temp.lvl3) {
+    animation-name: readyToUpgrade; 
+    animation-timing-function: ease-in;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-duration: 1s;
+    border-radius: 5px;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.end #board .tile, #tutoContainer .tile { pointer-events: none ;}
+
+.end #board .tile.upgradable, .end #board .tile.bat, .end #board .tile.ghost {
+    animation: none;
+}
+
+.tile.left { transform: scaleX(-1); }
+
+.tile.boy {
+    --from: -48px -32px;
+    --to: -80px -32px;
+}
+
+.tile.adult {
+    --from: 0px -48px;
+    --to: -32px -48px;
+}
+
+.tile.soldier {
+    --from: -32px -48px;
+    --to: -64px -48px;
+}
+
+.tile.ghost {
+    --from: -16px -64px;
+    --to: -48px -64px;
+}
+
+.tile.bat {
+    --from: -48px -64px;
+    --to: -80px -64px;
+}
+
+.tile:not(.tombstone)+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave.temp:hover,
+.tile:not(.tombstone)+.tile.ghost.temp:hover,
+.tile.temp.nope {
+    filter: hue-rotate(280deg);
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+jsglib-element { z-index: 10; }
+
+footer {
+    background: #111;
+    height: 51px;
+    color: #fff;
+    font-family: monospace;
+    padding: 4px;
+}
+
+.end footer { display: none; }
+
+#soulstoneCountDOM {
+    min-width: 32px;
+    display: inline-block;
+}
+
+.scaryometerContainer {
+    min-width: 32px;
+    display: inline-block;
+    margin-left: auto;
+}
+
+#shopInner {
+    display: flex;
+    align-items: center;
+}
+
+#shopWrapper menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-left: 12px;
+    display: flex;
+    flex-grow: 1;
+}
+
+#shopWrapper li + li {
+    margin-left: 4px;
+}
+
+#shopWrapper li:last-child {
+    margin-left: auto;
+    margin-right: 4px;
+}
+
+#shopWrapper button, .tuto-button {
+    border: 1px solid #111;
+    padding: 0;
+    background-color: transparent;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+#shopWrapper button { box-sizing: content-box; }
+
+#shopWrapper button:not(.selected):hover {
+    border-color: gold;				
+}
+
+#lifeContainer {
+    display: none;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+    padding-right: 8px;
+}
+
+.tuto-finished #lifeContainer {
+    display: flex;
+}
+
+.locked {
+    font-size: .5rem;
+    
+}
+
+.tuto {
+    font-family: monospace;
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    top: 0;
+    background: #000;
+    color: #fff;
+    border: 2px solid #fff;
+    z-index: 100;
+    line-height: normal;
+    padding: 8px;
+    overflow: hidden;
+    transition: transform 333ms ease-in-out;
+    transform: translateY(-100vh);
+}
+
+.tuto p {
+    margin: 0;
+    padding: 0;
+}
+
+.tuto b, #graveLeftCount, #treeLeftCount { color: cyan; }
+
+.tuto-button {
+    width: 32px;
+    height: 16px;
+    text-align: center;
+    color: white;
+    border: 0;
+    animation-name: clickMe; 
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-duration: 333ms;
+    position: absolute;
+    right: 8px;
+    bottom: 0;
+}
+
+.tuto-button:hover {
+    color: gold;
+}
+
+.tuto-step-1 #shopWrapper button.tile:not(.sound),
+.tuto-step-2 #shopWrapper button.tile:not(.none,.sound),
+.tuto-step-3 #shopWrapper button.tile:not(.soulflower,.sound),
+.tuto-step-4 #shopWrapper button.tile:not(.tree,.sound),
+.tuto-step-7-success #shopWrapper button.tile:not(.sound),
+.tuto-step-7-failure #shopWrapper button.tile:not(.sound),
+.tuto-step-8 #shopWrapper button.tile:not(.sound) {
+    pointer-events: none;
+    cursor: default;
+    filter: grayscale(1);
+    opacity: .8 !important;
+}
+
+.tuto-step-2 #shopWrapper button.tile.none,
+.tuto-step-3 #shopWrapper button.soulflower,
+.tuto-step-4 #shopWrapper button.tree {
+    animation-name: clickMe; 
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-duration: 333ms;
+    outline: 1px solid cyan;
+}
+
+.tuto-step-2 #shopWrapper button.tile.none:hover,.tuto-step-2 #shopWrapper button.tile.none.selected,
+.tuto-step-3 #shopWrapper button.tile.soulflower:hover,.tuto-step-3 #shopWrapper button.tile.soulflower.selected,
+.tuto-step-4 #shopWrapper button.tile.tree:hover,.tuto-step-4 #shopWrapper button.tile.tree.selected {
+    outline: none;
+}
+
+.tuto-mode.tuto-step-1 .tuto.step1,
+.tuto-mode.tuto-step-2 .tuto.step2,
+.tuto-mode.tuto-step-3 .tuto.step3,
+.tuto-mode.tuto-step-4 .tuto.step4,
+.tuto-mode.tuto-step-5 .tuto.step5,
+.tuto-mode.tuto-step-6-success .tuto.step6.success,
+.tuto-mode.tuto-step-6-failure .tuto.step6.failure,
+.tuto-mode.tuto-step-7-success .tuto.step7.success,
+.tuto-mode.tuto-step-7-failure .tuto.step7.failure,
+.tuto-mode.tuto-step-8 .tuto.step8,
+.end .tuto.stepEnd {
+    transform: translateY(100px);
+}
+
+[data-mode="remove"] {
+    margin-left: 8px;
+}
+
+#shopWrapper button.selected {
+    border-color: #eee;				
+}
+
+.item-description {
+    font-size: .5rem;
+    line-height: .6rem;
+    margin: 0;
+    padding: 0;
+    margin-top: 2px;
+    display: none;
+}
+
+.item-description p {
+    font-size: .6rem;
+    margin: 0;
+}
+
+#shopWrapper.none .item-description.none,
+#shopWrapper.tree .item-description.tree,
+#shopWrapper.soulflower .item-description.soulflower,
+#shopWrapper.ghost .item-description.ghost,
+#shopWrapper.bat .item-description.bat,
+#shopWrapper.tombstone.lvl1:not(.upgradable) .item-description.tombstone.lvl1,
+#shopWrapper.tombstone.lvl1.upgradable .item-description.tombstone.lvl2,
+#shopWrapper.tombstone.lvl2.upgradable .item-description.tombstone.lvl3,
+#shopWrapper.grave.lvl1:not(.upgradable) .item-description.grave.lvl1,
+#shopWrapper.grave.lvl1.upgradable .item-description.grave.lvl2,
+#shopWrapper.grave.lvl2.upgradable .item-description.grave.lvl3,
+#shopWrapper.sound .item-description.sound
+{ display:block; }
+
+.negative, .locked { color: red; }
+.positive { color: lightgreen; }
+
+#pictureLink {
+    color: cyan;
+    display: inline-block;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: transparent;
+    transition: all 400ms ease-in-out;
+}
+
+#pictureLink:hover {
+    text-decoration-color: cyan;
+}
+
+
+@keyframes spriteAnim {
+  0% { background-position: var(--from); }
+  100% { background-position: var(--to); }
+}
+
+@keyframes readyToUpgrade {
+    0% { filter: sepia(0) hue-rotate(0); }
+    100% { filter: sepia(1) hue-rotate(-180deg); }
+}
+
+@keyframes clickMe {
+    0% { transform: translateX(-2px); }
+    1000% { transform: translateX(2px); }
+}
+
+@keyframes pulsate {
+    0% { transform: scale(.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fade {
+    0% { opacity: .8; }
+    50% { opacity: .3; }
+    100% { opacity: 1; }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: rotate(0deg);
+        transform-origin: 50% 100%;
+    }
+    10% { transform: rotate(2deg); }
+    20%, 40%, 60% { transform: rotate(-4deg); }
+    30%, 50%, 70% { transform: rotate(4deg); }
+    80% { transform: rotate(-2deg); }
+    90% { transform: rotate(2deg); }
+}
