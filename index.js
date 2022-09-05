@@ -493,13 +493,9 @@ const toggleSound = () => {
 	});
 
 	board.addEventListener('click', (e) => {
-		console.log('click');
-	
 		if (!e.target.dataset.prevClassname) {
 			return;
 		}
-
-		console.log('has prevClassname');
 
 		const tempTargetClassName = e.target.className;
 		const { classList } = e.target;
@@ -581,14 +577,10 @@ const toggleSound = () => {
 
 			return;
 		}
-
-		console.log('Upgrade or not remove mode');
 		
 		if (!game.classList.contains('build-mode') && !isUpgrade) {
 			return;
 		}
-
-		console.log('Build mode or upgrade');
 
 		const cursorStyle = window.getComputedStyle(e.target).cursor;
 
@@ -618,7 +610,7 @@ const toggleSound = () => {
 				goToTutoStep(5);
 				tutoClock = window.setInterval(() => {
 					goToTutoStep(6, false);
-				}, 40000);
+				}, 60000);
 			}
 		}
 
@@ -878,7 +870,7 @@ const toggleSound = () => {
 	function gameMainLoop() {
 		const characterType = game.createdCharacterCount < 10 ? 'boy' : (
 			game.createdCharacterCount < 30 ? CHARACTER_TYPES[JSGLib.random(0, 1)] : (
-				CHARACTER_TYPES[JSGLib.random(0, CHARACTER_TYPES.length - 1)]
+				CHARACTER_TYPES[JSGLib.random(0, 3)]
 			)
 		);
 		createCharacter(characterType);
