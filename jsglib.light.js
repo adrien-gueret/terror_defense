@@ -100,33 +100,9 @@ function getClosestGameFromNode(node) {
 	return null;
 }
 
-let utils={dispatchEvent,random,cleanDuration,getDurationUnit,getFromAttribute,getFromAttributeAsInt,applyIsAttribute,getClosestGameFromNode};
-
-
 const gameTemplate = document.createElement('template');
 		
-gameTemplate.innerHTML = `
-	<style>			
-		:host {
-			display: block;
-			position: relative;
-			margin: auto;
-			background-color: #000;
-			overflow: hidden;
-			box-sizing: border-box;
-			transform-origin: top left;
-			touch-action: manipulation;
-			image-rendering: optimizeSpeed;
-			image-rendering: -moz-crisp-edges;
-			image-rendering: -o-crisp-edges;
-			image-rendering: -webkit-optimize-contrast;
-			image-rendering: pixelated;
-			image-rendering: optimize-contrast;
-			-ms-interpolation-mode: nearest-neighbor;
-		}
-	</style>
-	<slot></slot>
-`;
+gameTemplate.innerHTML='<style>:host{display:block;position:relative;margin:auto;background-color:#000;overflow:hidden;box-sizing:border-box;transform-origin:top left;touch-action:manipulation;image-rendering:optimizeSpeed;image-rendering:-moz-crisp-edges;image-rendering:-o-crisp-edges;image-rendering:-webkit-optimize-contrast;image-rendering:pixelated;image-rendering:optimize-contrast;-ms-interpolation-mode:nearest-neighbor;}</style><slot></slot>';
 
 class JSGLibGame extends HTMLElement {
 	constructor() {
@@ -137,19 +113,8 @@ class JSGLibGame extends HTMLElement {
 		
 		this.frameIndex = 0;
 		this.fps = 0;
-		this.mouse = {
-			x: 0,
-			y: 0,
-		};
 		
 		this.cachedBoundingClientRect = null;
-		this.intersectionObserver = null;
-		this.attachedViewElement = null;
-		this.viewPositionDelta = {};
-		this.scrollMaxLeft = Infinity;
-		this.scrollMaxTop = Infinity;
-		this.scrollMinLeft = 0;
-		this.scrollMinTop = 0;
 	}
 	
 	connectedCallback() {
@@ -159,11 +124,6 @@ class JSGLibGame extends HTMLElement {
 		this.width = getFromAttributeAsInt(this, 'width', 'auto');
 		this.height = getFromAttributeAsInt(this, 'height', 'auto');
 		this.zoom = getFromAttributeAsInt(this, 'zoom', 1);
-		
-		this.addEventListener('mousemove', (e) => {
-			this.mouse.x = e.clientX - this.x;
-			this.mouse.y = e.clientY - this.y;
-		});
 		
 		this.__resetCachedBoundingClientRect = () => this.cachedBoundingClientRect = null;
 		
@@ -183,22 +143,13 @@ class JSGLibGame extends HTMLElement {
 			const rect = super.getBoundingClientRect();
 			const computedStyle = window.getComputedStyle(this);
 			
-			if (this._zoom === 0) {
-				this.cachedBoundingClientRect = {
-					width: 0,
-					height: 0,
-					left: Math.floor(rect.left),
-					top: Math.floor(rect.top),
-				};
-			} else {
-				const zoom = Math.abs(this._zoom);
-				this.cachedBoundingClientRect = {
-					width: rect.width / zoom,
-					height: rect.height / zoom,
-					left: Math.floor(rect.left / zoom) + parseInt(computedStyle.borderLeftWidth, 10),
-					top: Math.floor(rect.top / zoom) + parseInt(computedStyle.borderTopWidth, 10),
-				};
-			}
+            const zoom = Math.abs(this._zoom);
+            this.cachedBoundingClientRect = {
+                width: rect.width / zoom,
+                height: rect.height / zoom,
+                left: Math.floor(rect.left / zoom) + parseInt(computedStyle.borderLeftWidth, 10),
+                top: Math.floor(rect.top / zoom) + parseInt(computedStyle.borderTopWidth, 10),
+            };
 		}
 		
 		return this.cachedBoundingClientRect;
@@ -230,31 +181,6 @@ class JSGLibGame extends HTMLElement {
 		}
 		
 		return element;
-	}
-	
-	
-	_viewLoop() {
-		if (!this.attachedViewElement) {
-			return;
-		}
-		
-		const { x, y } = this.attachedViewElement.getCenter();
-		const { x: deltaX = 0, y: deltaY = 0 } = this.viewPositionDelta;
-		
-		this.scrollLeft = Math.floor(Math.min(this.scrollMaxLeft, Math.max(this.scrollMinLeft, (x + deltaX) - this.width / 2)));
-		this.scrollTop = Math.floor(Math.min(this.scrollMaxTop, Math.max(this.scrollMinTop, (y + deltaY) - this.height / 2)));
-		
-		window.setTimeout(this._viewLoop.bind(this), 1000 / this.fps);
-	}
-	
-	attachViewToElement(elementToAttach, positionDelta = {}) {
-		this.attachedViewElement = elementToAttach;
-		this.viewPositionDelta = positionDelta;
-		this._viewLoop(positionDelta);
-	}
-	
-	detachViewElement() {
-		this.attachedViewElement = null;
 	}
 	
 	get x() {
@@ -299,17 +225,7 @@ class JSGLibGame extends HTMLElement {
 
 const transformTemplate = document.createElement('template');
 		
-transformTemplate.innerHTML = `
-	<style>			
-		:host {
-			display: block;
-			position: absolute;
-			inset: 0;
-			transform-origin: center;
-		}
-	</style>
-	<slot></slot>
-`;
+transformTemplate.innerHTML='<style>:host{display: block;position: absolute;inset: 0;transform-origin: center;}</style><slot></slot>';
 
 function get(transformElement, scope, property) {
 	return transformElement[scope][property];
@@ -332,10 +248,10 @@ class JSGLibTransform extends HTMLElement {
 	
 	connectedCallback() {
 		this.property = this.hasAttribute('property') ? this.getAttribute('property') : 'translateX';
-		this.value = this.hasAttribute('value') ? this.getAttribute('value') : 0;
+		this.value = 0;
 		this.prevValue = this.value;
-		this.duration = this.hasAttribute('duration') ? this.getAttribute('duration') : 0;
-		this.timingFunction = this.hasAttribute('timing-function') ? this.getAttribute('timing-function') : 'linear';
+		this.duration = 0;
+		this.timingFunction = 'linear';
 		
 		this.applyTransform();
 		
@@ -345,7 +261,6 @@ class JSGLibTransform extends HTMLElement {
 			}
 
 			dispatchEvent(e.target, 'jsglib:transformationEnd', {
-				detail: { prevValue: parseInt(this.prevValue, 10), nextValue: parseInt(this.value, 10), fullPrevValue: this.prevValue, fullNextValue: this.value },
 				bubbles: false,
 			});
 		});
@@ -409,44 +324,9 @@ class JSGLibTransform extends HTMLElement {
 	}
 }
 
-
-
-
 const elemTemplate = document.createElement('template');
 		
-const getBaseTemplate = (children) => `
-	<style>			
-		:host {
-			display: block;
-			position: absolute;
-			padding: 0;
-			left: 0;
-			top: 0;
-			z-index: 0;
-		}
-		
-		slot, ::slotted(*) {
-			display: block;
-			position: absolute;
-			inset: 0;
-			transform-origin: center;
-		}
-	</style>
-		
-	<jsglib-transform property="translateY">
-		<jsglib-transform property="translateX">
-			${children}
-		</jsglib-transform>
-	</jsglib-transform>
-`;
-
-function getBoundedX(jsglibElement, x) {
-	return Math.floor(Math.max(jsglibElement.xmin, Math.min(jsglibElement.xmax, x)));
-}
-
-function getBoundedY(jsglibElement, y) {
-	return Math.floor(Math.max(jsglibElement.ymin, Math.min(jsglibElement.ymax, y)));
-}
+const getBaseTemplate = (children) => `<style>:host{display:block;position:absolute;padding:0;left 0;top:0;z-index:0;}slot, ::slotted(*){display:block;position:absolute;inset:0;transform-origin:center;}</style><jsglib-transform property="translateY"><jsglib-transform property="translateX">${children}</jsglib-transform></jsglib-transform>`;
 
 class JSGLibElement extends HTMLElement {
 	constructor() {
@@ -491,10 +371,6 @@ class JSGLibElement extends HTMLElement {
 		this._content = this.shadowRoot.querySelector('slot');
 		this._content._jsglibElement = this;
 		
-		this.xmin = getFromAttributeAsInt(this, 'xmin', -Infinity);
-		this.ymin = getFromAttributeAsInt(this, 'ymin', -Infinity);
-		this.xmax = getFromAttributeAsInt(this, 'xmax', Infinity);
-		this.ymax = getFromAttributeAsInt(this, 'ymax', Infinity);
 		this.width = getFromAttributeAsInt(this, 'width', 16);
 		this.height = getFromAttributeAsInt(this, 'height', 16);	
 
@@ -521,33 +397,14 @@ class JSGLibElement extends HTMLElement {
 		if (!this._cachedBoundingClientRect) {
 			const rect = this._content.getBoundingClientRect();
 			
-			const zoom = Math.abs(this.game._zoom);
-			
-			const isSticky = Boolean(this.stickyContainer);
-			const scrollDelta = isSticky ? {
-				x: 0,
-				y: 0,
-			} : {
-				x: this.game.scrollLeft,
-				y: this.game.scrollTop,
-			}
-			
-			
-			if (zoom === 0) {
-				this._cachedBoundingClientRect = {
-					width: 0,
-					height: 0,
-					left: Math.floor(rect.left) + scrollDelta.x,
-					top: Math.floor(rect.top) + scrollDelta.y,
-				};
-			} else {
-				this._cachedBoundingClientRect = {
-					width: rect.width / zoom,
-					height: rect.height / zoom,
-					left: Math.floor(rect.left / zoom) + scrollDelta.x,
-					top: Math.floor(rect.top / zoom) + scrollDelta.y,
-				};
-			}
+			const zoom = 2;
+
+            this._cachedBoundingClientRect = {
+                width: rect.width / zoom,
+                height: rect.height / zoom,
+                left: Math.floor(rect.left / zoom),
+                top: Math.floor(rect.top / zoom),
+            };	
 			
 			this.clearCachedBoundingClientRectClock = window.setTimeout(() => {
 				this._cachedBoundingClientRect = null;
@@ -576,7 +433,7 @@ class JSGLibElement extends HTMLElement {
 	}
 	
 	set x(value) {
-		this._transformContainers.translateX.value = `${getBoundedX(this, value)}px`;
+		this._transformContainers.translateX.value = `${value}px`;
 		this._transformContainers.translateX.applyTransform();
 	}
 	
@@ -585,7 +442,7 @@ class JSGLibElement extends HTMLElement {
 	}
 	
 	set y(value) {
-		this._transformContainers.translateY.value = `${getBoundedY(this, value)}px`;
+		this._transformContainers.translateY.value = `${value}px`;
 		this._transformContainers.translateY.applyTransform();
 	}
 	
@@ -643,16 +500,9 @@ class JSGLibElement extends HTMLElement {
 		}
 	}
 	
-	getCenter() {
-		return {
-			x: this.x + this.width/2,
-			y: this.y + this.height/2,
-		};
-	};
-	
 	moveX(x, options = {}) {
 		const prevX = this.x;
-		const nextX = getBoundedX(this, x);
+		const nextX = x;
 		const deltaX = nextX - prevX;
 		
 		let duration = cleanDuration(Math.abs(deltaX) / options.speed);
@@ -675,7 +525,7 @@ class JSGLibElement extends HTMLElement {
 	
 	moveY(y, options = {}) {
 		const prevY = this.y;
-		const nextY = getBoundedY(this, y);
+		const nextY = y;
 		const deltaY = nextY - prevY;	
 		
 		let duration = cleanDuration(Math.abs(deltaY) / options.speed);
@@ -725,5 +575,5 @@ export default {
 	Game: JSGLibGame,
 	Element: JSGLibElement,
 	Transform: JSGLibTransform,
-	...utils,
+	random,
 };
