@@ -1,41 +1,88 @@
 const fs = require('fs');
+const https = require('https');
 
-fs.rmSync('./dist', { recursive: true, force: true });
-fs.rmSync('./dist-min', { recursive: true, force: true });
+const MINIFIERS = {
+    HTML: 'html-minifier',
+    JS: 'javascript-minifier',
+    CSS: 'cssminifier',
+};
 
-let indexHTML = fs.readFileSync('./index.html', 'utf8');
+function minify(code, minifier) {
+    const codeToMinify = 'input=' + encodeURIComponent(code);
 
-let indexJS = fs.readFileSync('./index.js', 'utf8')
-    .replace("import JSGLib from './jsglib.min.js';", '')
-    .replace("import './character.js';", '')
-    .replace("const TILE_SIZE = 16;", '');
+    const minifyRequestOptions = {
+        hostname: 'www.toptal.com',
+        port: 443,
+        path: '/developers/' + minifier + '/api/raw',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': codeToMinify.length,
+        },
+    };
 
-let characterJS = fs.readFileSync('./character.js', 'utf8')
-    .replace("import JSGLib from './jsglib.min.js';", '');
+    return new Promise((resolve, reject) => {
+        const request = https.request(minifyRequestOptions, (res) => {
+            let data = '';
+        
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+        
+            res.on('end', () => resolve(data));
+        
+        }).on('error', reject);
+        
+        request.write(codeToMinify);
+        request.end();
+    });
+}
 
-const jsglib = fs.readFileSync('./jsglib.min.js', 'utf8').replace('export default','var JSGLib=') + ';';
+(async () => {
+    fs.rmSync('./dist', { recursive: true, force: true });
+    fs.rmSync('./dist-min', { recursive: true, force: true });
 
-const jsContent = jsglib + characterJS + indexJS;
+    let indexHTML = fs.readFileSync('./index.html', 'utf8');
 
-indexHTML = indexHTML
-    .replace('<script type="module" src="index.js"></script>', `<script>${jsContent}</script>`)
-    .replace('./images/favicon.png', './f.png')
-    .replaceAll('./images/tiles.png', './t.png');
+    let styleCSS = fs.readFileSync('./style.css', 'utf8');
 
-const ids = [...indexHTML.matchAll(/id="([^"]*?)"/g)];
+    let indexJS = fs.readFileSync('./index.js', 'utf8')
+        .replace("import JSGLib from './jsglib.min.js';", '')
+        .replace("import './character.js';", '')
+        .replace("const TILE_SIZE = 16;", '');
 
-ids.forEach((id, i) => {
-    indexHTML = indexHTML.replaceAll(id[1], '_' + i);
-});
+    let characterJS = fs.readFileSync('./character.js', 'utf8')
+        .replace("import JSGLib from './jsglib.min.js';", '');
 
-fs.mkdirSync('./dist');
-fs.cpSync('./images/favicon.png', './dist/f.png');
-fs.cpSync('./images/tiles.png', './dist/t.png');
-fs.writeFileSync( './dist/index.html', indexHTML, { encoding: 'utf8' });
+    const jsglib = fs.readFileSync('./jsglib.min.js', 'utf8').replace('export default','var JSGLib=') + ';';
 
-fs.mkdirSync('./dist-min');
-fs.cpSync('./images/favicon.png', './dist-min/f.png');
-fs.cpSync('./images/tiles.png', './dist-min/t.png');
-fs.writeFileSync( './dist-min/index.html', '<script>MINIFIED_CODE_HERE</script>', { encoding: 'utf8' });
+    const minifiedJS = await minify(characterJS + indexJS, MINIFIERS.JS);
+    const minifiedCSS = await minify(styleCSS, MINIFIERS.CSS);
 
-console.log('Done');
+    indexHTML = indexHTML
+        .replace('<script type="module" src="index.js"></script>', `<script>${jsglib + minifiedJS}</script>`)
+        .replace('<link rel="stylesheet" href="./style.css" />', `<style>${minifiedCSS}</style>`)
+        .replace('./images/favicon.png', './f.png')
+        .replaceAll('./images/tiles.png', './t.png')
+        .replaceAll('item-description', 'i-d');
+
+    const ids = [...indexHTML.matchAll(/id="([^"]*?)"/g)];
+
+    ids.forEach((id, i) => {
+        indexHTML = indexHTML.replaceAll(id[1], '_' + i);
+    });
+
+    const minifiedHTML = await minify(indexHTML, MINIFIERS.HTML);
+
+    fs.mkdirSync('./dist');
+    fs.cpSync('./images/favicon.png', './dist/f.png');
+    fs.cpSync('./images/tiles.png', './dist/t.png');
+    fs.writeFileSync( './dist/index.html', minifiedHTML, { encoding: 'utf8' });
+
+    fs.mkdirSync('./dist-min');
+    fs.cpSync('./images/favicon.png', './dist-min/f.png');
+    fs.cpSync('./images/tiles.png', './dist-min/t.png');
+    fs.writeFileSync( './dist-min/index.html', '<script>PACKED_CODE_HERE</script>', { encoding: 'utf8' });
+
+    console.log('Done');
+})();
