@@ -428,7 +428,7 @@ const toggleSound = () => {
 
 		e.target.dataset.prevClassname = e.target.className;
 		
-		if (!isRemoveMode && canUpgradeCurrentTile) {
+		if (canUpgradeCurrentTile) {
 			shop.dataset.prevClassname = shop.className;
 			setShopClassName(e.target.className);
 
@@ -493,11 +493,23 @@ const toggleSound = () => {
 	});
 
 	board.addEventListener('click', (e) => {
+		console.log('click');
+	
 		if (!e.target.dataset.prevClassname) {
 			return;
 		}
-	
-		if (game.classList.contains('remove-mode')) {
+
+		console.log('has prevClassname');
+
+		const tempTargetClassName = e.target.className;
+		const { classList } = e.target;
+
+		const isUpgrade = classList.contains('upgradable');
+		const isTombstone = classList.contains('tombstone');
+		const isGrave = classList.contains('grave');
+		const isTree = classList.contains('tree');
+		
+		if (!isUpgrade && game.classList.contains('remove-mode')) {
 			if (!game.updateSoulstoneCount(SHOP_COSTS.none)) {
 				playSound(forbiddenSound);
 				return;
@@ -569,10 +581,14 @@ const toggleSound = () => {
 
 			return;
 		}
+
+		console.log('Upgrade or not remove mode');
 		
-		if (!game.classList.contains('build-mode')) {
+		if (!game.classList.contains('build-mode') && !isUpgrade) {
 			return;
 		}
+
+		console.log('Build mode or upgrade');
 
 		const cursorStyle = window.getComputedStyle(e.target).cursor;
 
@@ -580,14 +596,6 @@ const toggleSound = () => {
 			playSound(forbiddenSound);
 			return;
 		}
-
-		const tempTargetClassName = e.target.className;
-		const { classList } = e.target;
-
-		const isUpgrade = classList.contains('upgradable');
-		const isTombstone = classList.contains('tombstone');
-		const isGrave = classList.contains('grave');
-		const isTree = classList.contains('tree');
 
 		if (game.classList.contains('tuto-step-3')) {
 			if (!classList.contains('soulflower')) {
@@ -802,7 +810,7 @@ const toggleSound = () => {
 			if (game.classList.contains('tuto-mode')) {
 				return;
 			}
-			
+
 			const emptyTiles = board.querySelectorAll('.tile.none.buildable');
 			const emptyTilesCount = emptyTiles.length;
 	

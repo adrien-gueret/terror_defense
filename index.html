@@ -93,30 +93,31 @@
 
 			#shop .tile:hover,
 			.build-mode .tile.buildable:hover,
+			.build-mode .tile.upgradable:hover,
 			.remove-mode .tile.flower:hover,
 			.remove-mode .tile.soulflower:hover,
 			.remove-mode .tile.grass:hover,
 			.remove-mode .tile.built:hover,
-			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave,
-			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile.ghost,
+			.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave,
+			.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile.ghost,
 			.remove-mode .tile.warning,
 			.tile.temp:hover {
 				outline: 1px solid black;
 				z-index: 10;
 			}
 
-			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile.ghost,
+			.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile.ghost,
 			.remove-mode .tile.warning {
 				animation: none !important;
 			}
 
-			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave,
-			.remove-mode .tile[data-prev-classname*='tombstone']:hover+.tile.ghost,
+			.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile+.tile.grave,
+			.remove-mode .tile[data-prev-classname*='tombstone']:not(.upgradable):hover+.tile.ghost,
 			.remove-mode .tile.warning {
 				background-position: 0 0 !important;
 			}
 
-			.remove-mode #board .tile {
+			.remove-mode #board .tile:not(.upgradable:hover) {
 				outline-color: rgb(173, 30, 30) !important;
 			}
 
