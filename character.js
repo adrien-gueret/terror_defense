@@ -15,9 +15,9 @@ function Character(character) {
     const characterType = character.getAttribute('characterType');
     const { baseSpeed, baseCourage, awardedSoulstones } = CHARACTER_CONF[characterType];
    
-    const maxCourage = Math.min((baseCourage + 100) * 10, baseCourage * (Math.floor(createdCharacterCount / 10) + 1));
+    const maxCourage = Math.min((baseCourage + 100) * 20, baseCourage * (Math.floor(createdCharacterCount / 10) + 1));
     let currentCourage = maxCourage;
-    let currentSpeed = Math.min((baseSpeed + 2) * 5, baseSpeed + Math.floor(createdCharacterCount / 8));
+    let currentSpeed = Math.min((baseSpeed + 5) * 5, baseSpeed + Math.floor(createdCharacterCount / 8));
     let clock = null;
     character.isFleeing = false;
 
