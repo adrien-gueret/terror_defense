@@ -384,8 +384,12 @@ const toggleSound = () => {
 		scaryometerDOM.innerHTML = scaryometerValue;
 		scaryometerEndDOM.innerHTML = scaryometerValue;
 
-		if (scaryometerValue >= 0 && game.classList.contains('tuto-step-5')) {
-			goToTutoStep(6);
+		if (game.classList.contains('tuto-step-5')) {
+			if (scaryometerValue >= 0) {
+				goToTutoStep(6, true);
+			} else if (scaryometerValue <= -30) {
+				goToTutoStep(6, false);
+			}
 		}
 	}
 
@@ -604,6 +608,9 @@ const toggleSound = () => {
 
 			if (game.dataset.tutoCounter >= 3) {
 				goToTutoStep(5);
+				tutoClock = window.setInterval(() => {
+					goToTutoStep(6, false);
+				}, 40000);
 			}
 		}
 
@@ -695,7 +702,7 @@ const toggleSound = () => {
 		game.classList.add(modeClassName);
 		game.dataset.prevModeClassName = modeClassName;
 
-		if (!hasFirstCharacterBeenCreated && game.classList.contains('tuto-step-6')) {
+		if (!hasFirstCharacterBeenCreated && (game.classList.contains('tuto-step-6-success') || game.classList.contains('tuto-step-6-failure'))) {
 			hasFirstCharacterBeenCreated = true;
 
 			for (let tile of board.querySelectorAll('.tombstone')) {
@@ -706,9 +713,7 @@ const toggleSound = () => {
 				const character = createCharacter('boy');
 
 				character.addEventListener('jsglib:destroy', () => {
-					game.classList.remove('tuto-step-6');
-					game.classList.add(character.isFleeing ? 'tuto-step-7-success' : 'tuto-step-7-failure');
-					changeGameMode('tuto');
+					goToTutoStep(7, character.isFleeing);
 				});
 			}, 300);
 		} else if (game.classList.contains('tuto-step-8')) {
@@ -787,10 +792,17 @@ const toggleSound = () => {
 	let growFlowerClock;
 	function activeFlowers() {
 		soulflowerAwardClock = window.setInterval(() => {
+			if (game.classList.contains('tuto-mode')) {
+				return;
+			}
 			game.updateSoulstoneCount(board.querySelectorAll('.soulflower.built').length);
 		}, 4000);
 
 		growFlowerClock = window.setInterval(() => {
+			if (game.classList.contains('tuto-mode')) {
+				return;
+			}
+			
 			const emptyTiles = board.querySelectorAll('.tile.none.buildable');
 			const emptyTilesCount = emptyTiles.length;
 	
@@ -809,26 +821,28 @@ const toggleSound = () => {
 		}, 10000);
 	}
 
-	function goToTutoStep(stepNumber) {
+	let prevTutoStepClassName = null;
+	function goToTutoStep(stepNumber, isSuccessStatus = null) {
 		if (tutoClock) {
 			window.clearTimeout(tutoClock);
 		}
 
 		changeGameMode('tuto');
 
-		if (stepNumber > 1) {
-			if (stepNumber === 8) {
-				game.classList.remove('tuto-step-7-success');
-				game.classList.remove('tuto-step-7-failure');
-			} else {
-				game.classList.remove('tuto-step-' + (stepNumber - 1));
-			}
+		if (prevTutoStepClassName) {
+			game.classList.remove(prevTutoStepClassName);
 		}
 
-		if (document.querySelector('.step' + stepNumber)) {
-			game.classList.add('tuto-step-' + stepNumber);
-			game.dataset.tutoCounter = 0;
+		prevTutoStepClassName = 'tuto-step-' + stepNumber;
+
+		if (isSuccessStatus === true) {
+			prevTutoStepClassName += '-success';
+		} else if (isSuccessStatus === false) {
+			prevTutoStepClassName += '-failure';
 		}
+
+		game.classList.add(prevTutoStepClassName);
+		game.dataset.tutoCounter = 0;
 	}
 
 	game.createdCharacterCount = 0;
