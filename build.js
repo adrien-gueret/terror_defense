@@ -47,24 +47,29 @@ function minify(code, minifier) {
     let styleCSS = fs.readFileSync('./style.css', 'utf8');
 
     let indexJS = fs.readFileSync('./index.js', 'utf8')
-        .replace("import JSGLib from './jsglib.min.js';", '')
+        .replace("import JSGLib from './jsglib.light.js';", '')
         .replace("import './character.js';", '')
         .replace("const TILE_SIZE = 16;", '');
 
     let characterJS = fs.readFileSync('./character.js', 'utf8')
-        .replace("import JSGLib from './jsglib.min.js';", '');
+        .replace("import JSGLib from './jsglib.light.js';", '');
 
-    const jsglib = fs.readFileSync('./jsglib.min.js', 'utf8').replace('export default','var JSGLib=') + ';';
+    const jsglib = fs.readFileSync('./jsglib.light.js', 'utf8').replace('export default','var JSGLib=') + ';';
 
-    const minifiedJS = await minify(characterJS + indexJS, MINIFIERS.JS);
+    const minifiedJS = await minify(jsglib + characterJS + indexJS, MINIFIERS.JS);
     const minifiedCSS = await minify(styleCSS, MINIFIERS.CSS);
 
     indexHTML = indexHTML
-        .replace('<script type="module" src="index.js"></script>', `<script>${jsglib + minifiedJS}</script>`)
+        .replace('<script type="module" src="index.js"></script>', `<script>${minifiedJS}</script>`)
         .replace('<link rel="stylesheet" href="./style.css" />', `<style>${minifiedCSS}</style>`)
         .replace('./images/favicon.png', './f.png')
         .replaceAll('./images/tiles.png', './t.png')
-        .replaceAll('item-description', 'i-d');
+        .replaceAll('item-description', 'i-d')
+        .replaceAll('data-prev-classname', 'data-pc')
+        .replaceAll('dataset.prevClassname', 'dataset.pc')
+        .replaceAll('tile', 'z')
+        .replaceAll('tuto-step', 'ts')
+        .replaceAll('JSGLib', '$');
 
     const ids = [...indexHTML.matchAll(/id="([^"]*?)"/g)];
 

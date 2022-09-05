@@ -1,4 +1,4 @@
-import JSGLib from './jsglib.min.js';
+import JSGLib from './jsglib.light.js';
 
 import './character.js';
 
@@ -791,9 +791,8 @@ const toggleSound = () => {
 	let soulflowerAwardClock;
 	let growFlowerClock;
 	function activeFlowers() {
-		const canUpdateValues = !game.classList.contains('tuto-mode') && document.hasFocus();
-
 		soulflowerAwardClock = window.setInterval(() => {
+			const canUpdateValues = !game.classList.contains('tuto-mode') && document.hasFocus();
 			if (!canUpdateValues) {
 				return;
 			}
@@ -801,6 +800,7 @@ const toggleSound = () => {
 		}, 4000);
 
 		growFlowerClock = window.setInterval(() => {
+			const canUpdateValues = !game.classList.contains('tuto-mode') && document.hasFocus();
 			if (!canUpdateValues) {
 				return;
 			}

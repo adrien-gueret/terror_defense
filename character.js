@@ -1,4 +1,4 @@
-import JSGLib from './jsglib.min.js';
+import JSGLib from './jsglib.light.js';
 
 const TILE_SIZE = 16;
 const CHARACTER_DELTA_Y = -6;
