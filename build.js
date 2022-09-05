@@ -67,8 +67,16 @@ function minify(code, minifier) {
         .replaceAll('item-description', 'i-d')
         .replaceAll('data-prev-classname', 'data-pc')
         .replaceAll('dataset.prevClassname', 'dataset.pc')
+        .replaceAll('upgradable', 'u')
+        .replaceAll('bat-unlocked', 'bu')
+        .replaceAll('ghost-unlocked', 'gu')
+        .replaceAll('tuto-button', 'tb')
+        .replaceAll('tutoCounter', 'tc')
+        .replaceAll('tombstone', 'tt')
         .replaceAll('tile', 'z')
         .replaceAll('tuto-step', 'ts')
+        .replaceAll('success', 's')
+        .replaceAll('failure', 'f')
         .replaceAll('JSGLib', '$');
 
     const ids = [...indexHTML.matchAll(/id="([^"]*?)"/g)];

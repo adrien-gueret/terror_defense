@@ -111,16 +111,12 @@ class JSGLibGame extends HTMLElement {
 		const shadowRoot = this.attachShadow({ mode: 'open' });
 		shadowRoot.appendChild(gameTemplate.content.cloneNode(true));
 		
-		this.frameIndex = 0;
-		this.fps = 0;
-		
 		this.cachedBoundingClientRect = null;
 	}
 	
 	connectedCallback() {
 		this.setAttribute('data-jsglib-game', 1);
 		
-		this.fps = getFromAttributeAsInt(this, 'fps', 60);
 		this.width = getFromAttributeAsInt(this, 'width', 'auto');
 		this.height = getFromAttributeAsInt(this, 'height', 'auto');
 		this.zoom = getFromAttributeAsInt(this, 'zoom', 1);
@@ -360,8 +356,6 @@ class JSGLibElement extends HTMLElement {
 
 		this.shadowRoot._game = this.game;
 		
-		this.stickyContainer = this.closest('[data-jsglib-sticky-container]');
-		
 		this.setAttribute('data-jsglib-element', 1);
 		
 		this._transformContainers = {
@@ -408,7 +402,7 @@ class JSGLibElement extends HTMLElement {
 			
 			this.clearCachedBoundingClientRectClock = window.setTimeout(() => {
 				this._cachedBoundingClientRect = null;
-			}, 1000 / this.game.fps);
+			}, 1000 /60);
 		}
 		
 		return this._cachedBoundingClientRect;
