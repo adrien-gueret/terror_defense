@@ -51,8 +51,8 @@
 			}
 
 			.tile.built,
-			.ghost-unlocked #shop .tile.ghost,
-			.bat-unlocked #shop .tile.bat {
+			.ghost-unlocked #shopWrapper .tile.ghost,
+			.bat-unlocked #shopWrapper .tile.bat {
 				animation: pulsate 0.5s ease-in-out 1 both;
 			}
 
@@ -69,7 +69,7 @@
 					spriteAnim 1s steps(2) infinite;
 			}
 
-			#shop .tile:not(.soulstone,.scaryometer,.heart),
+			#shopWrapper .tile:not(.soulstone,.scaryometer,.heart),
 			.build-mode .tile.buildable,
 			.remove-mode .tile.flower,
 			.remove-mode .tile.soulflower,
@@ -80,18 +80,18 @@
 				cursor: pointer;
 			}
 
-			jsglib-game:not(.ghost-unlocked) #shop .tile.ghost,
-			jsglib-game:not(.bat-unlocked) #shop .tile.bat {
+			jsglib-game:not(.ghost-unlocked) #shopWrapper .tile.ghost,
+			jsglib-game:not(.bat-unlocked) #shopWrapper .tile.bat {
 				cursor: default;
 				opacity: .4;
 			}
 
-			.ghost-unlocked #ghost-lock,
-			.bat-unlocked #bat-lock {
+			.ghost-unlocked #ghostLock,
+			.bat-unlocked #batLock {
 				display: none;
 			}
 
-			#shop .tile:hover,
+			#shopWrapper .tile:hover,
 			.build-mode .tile.buildable:hover,
 			.build-mode .tile.upgradable:hover,
 			.remove-mode .tile.flower:hover,
@@ -249,7 +249,7 @@
 				align-items: center;
 			}
 
-			#shop menu {
+			#shopWrapper menu {
 				list-style: none;
 				padding: 0;
 				margin: 0;
@@ -258,16 +258,16 @@
 				flex-grow: 1;
 			}
 
-			#shop li + li {
+			#shopWrapper li + li {
 				margin-left: 4px;
 			}
 
-			#shop li:last-child {
+			#shopWrapper li:last-child {
 				margin-left: auto;
 				margin-right: 4px;
 			}
 
-			#shop button, .tuto-button {
+			#shopWrapper button, .tuto-button {
 				border: 1px solid #111;
 				padding: 0;
 				background-color: transparent;
@@ -276,9 +276,9 @@
 				cursor: pointer;
 			}
 
-			#shop button { box-sizing: content-box; }
+			#shopWrapper button { box-sizing: content-box; }
 
-			#shop button:not(.selected):hover {
+			#shopWrapper button:not(.selected):hover {
 				border-color: gold;				
 			}
 
@@ -343,22 +343,22 @@
 				color: gold;
 			}
 
-			.tuto-step-1 #shop button.tile:not(.sound),
-			.tuto-step-2 #shop button.tile:not(.none,.sound),
-			.tuto-step-3 #shop button.tile:not(.soulflower,.sound),
-			.tuto-step-4 #shop button.tile:not(.tree,.sound),
-			.tuto-step-7-success #shop button.tile:not(.sound),
-			.tuto-step-7-failure #shop button.tile:not(.sound),
-			.tuto-step-8 #shop button.tile:not(.sound) {
+			.tuto-step-1 #shopWrapper button.tile:not(.sound),
+			.tuto-step-2 #shopWrapper button.tile:not(.none,.sound),
+			.tuto-step-3 #shopWrapper button.tile:not(.soulflower,.sound),
+			.tuto-step-4 #shopWrapper button.tile:not(.tree,.sound),
+			.tuto-step-7-success #shopWrapper button.tile:not(.sound),
+			.tuto-step-7-failure #shopWrapper button.tile:not(.sound),
+			.tuto-step-8 #shopWrapper button.tile:not(.sound) {
 				pointer-events: none;
 				cursor: default;
 				filter: grayscale(1);
 				opacity: .8 !important;
 			}
 
-			.tuto-step-2 #shop button.tile.none,
-			.tuto-step-3 #shop button.soulflower,
-			.tuto-step-4 #shop button.tree {
+			.tuto-step-2 #shopWrapper button.tile.none,
+			.tuto-step-3 #shopWrapper button.soulflower,
+			.tuto-step-4 #shopWrapper button.tree {
 				animation-name: clickMe; 
 				animation-timing-function: ease-in-out;
 				animation-iteration-count: infinite;
@@ -367,9 +367,9 @@
 				outline: 1px solid cyan;
 			}
 
-			.tuto-step-2 #shop button.tile.none:hover,.tuto-step-2 #shop button.tile.none.selected,
-			.tuto-step-3 #shop button.tile.soulflower:hover,.tuto-step-3 #shop button.tile.soulflower.selected,
-			.tuto-step-4 #shop button.tile.tree:hover,.tuto-step-4 #shop button.tile.tree.selected {
+			.tuto-step-2 #shopWrapper button.tile.none:hover,.tuto-step-2 #shopWrapper button.tile.none.selected,
+			.tuto-step-3 #shopWrapper button.tile.soulflower:hover,.tuto-step-3 #shopWrapper button.tile.soulflower.selected,
+			.tuto-step-4 #shopWrapper button.tile.tree:hover,.tuto-step-4 #shopWrapper button.tile.tree.selected {
 				outline: none;
 			}
 
@@ -391,7 +391,7 @@
 				margin-left: 8px;
 			}
 
-			#shop button.selected {
+			#shopWrapper button.selected {
 				border-color: #eee;				
 			}
 
@@ -409,18 +409,18 @@
 				margin: 0;
 			}
 
-			#shop.none .item-description.none,
-			#shop.tree .item-description.tree,
-			#shop.soulflower .item-description.soulflower,
-			#shop.ghost .item-description.ghost,
-			#shop.bat .item-description.bat,
-			#shop.tombstone.lvl1:not(.upgradable) .item-description.tombstone.lvl1,
-			#shop.tombstone.lvl1.upgradable .item-description.tombstone.lvl2,
-			#shop.tombstone.lvl2.upgradable .item-description.tombstone.lvl3,
-			#shop.grave.lvl1:not(.upgradable) .item-description.grave.lvl1,
-			#shop.grave.lvl1.upgradable .item-description.grave.lvl2,
-			#shop.grave.lvl2.upgradable .item-description.grave.lvl3,
-			#shop.sound .item-description.sound
+			#shopWrapper.none .item-description.none,
+			#shopWrapper.tree .item-description.tree,
+			#shopWrapper.soulflower .item-description.soulflower,
+			#shopWrapper.ghost .item-description.ghost,
+			#shopWrapper.bat .item-description.bat,
+			#shopWrapper.tombstone.lvl1:not(.upgradable) .item-description.tombstone.lvl1,
+			#shopWrapper.tombstone.lvl1.upgradable .item-description.tombstone.lvl2,
+			#shopWrapper.tombstone.lvl2.upgradable .item-description.tombstone.lvl3,
+			#shopWrapper.grave.lvl1:not(.upgradable) .item-description.grave.lvl1,
+			#shopWrapper.grave.lvl1.upgradable .item-description.grave.lvl2,
+			#shopWrapper.grave.lvl2.upgradable .item-description.grave.lvl3,
+			#shopWrapper.sound .item-description.sound
 			{ display:block; }
 
 			.negative, .locked { color: red; }
@@ -576,7 +576,7 @@
 			</section>
 
 			<main id="board"></main>
-			<footer id="shop">
+			<footer id="shopWrapper">
 				<div id="shopInner">
 					<div>
 						<span class="tile soulstone" title="Soulstone"></span>x 
@@ -728,7 +728,7 @@
 							Bat: 30 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+5</b>
-							<span id="bat-lock">
+							<span id="batLock">
 								| <span class="locked"><b>Locked:</b> get at least 12 trees to unlock <i>(<span id="treeLeftCount">12</span> left!)</i></span>
 							</span>
 						</p>
@@ -743,7 +743,7 @@
 							Ghost: 75 <span class="tile soulstone"></span>
 							|
 							Scary-o-meter: <b class="positive">+10</b>
-							<span id="ghost-lock">
+							<span id="ghostLock">
 								| <span class="locked"><b>Locked:</b> get at least 8 graves to unlock <i>(<span id="graveLeftCount">8</span> left!)</i></span>
 							</span>
 						</p>

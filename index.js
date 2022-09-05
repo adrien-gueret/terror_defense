@@ -396,8 +396,8 @@ const toggleSound = () => {
 	renderScaryometer();
 
 	const setShopClassName = (shopClassName) => {
-		shop.className = shopClassName;
-		shop.classList.remove('tile','buildable', 'selected', 'built');
+		shopWrapper.className = shopClassName;
+		shopWrapper.classList.remove('tile','buildable', 'selected', 'built');
 	};
 
 	const renderShopDescription = (e) => {
@@ -429,7 +429,7 @@ const toggleSound = () => {
 		e.target.dataset.prevClassname = e.target.className;
 		
 		if (canUpgradeCurrentTile) {
-			shop.dataset.prevClassname = shop.className;
+			shopWrapper.dataset.prevClassname = shopWrapper.className;
 			setShopClassName(e.target.className);
 
 			const isLevel1 = classList.contains('lvl1');
@@ -470,9 +470,9 @@ const toggleSound = () => {
 	});
 	
 	board.addEventListener('mouseout', (e) => {
-		if (e.target.classList.contains('upgradable') && shop.dataset.prevClassname) {
-			shop.className = shop.dataset.prevClassname;
-			delete shop.dataset.prevClassname;
+		if (e.target.classList.contains('upgradable') && shopWrapper.dataset.prevClassname) {
+			shopWrapper.className = shopWrapper.dataset.prevClassname;
+			delete shopWrapper.dataset.prevClassname;
 		}
 
 		if (!e.target.dataset.prevClassname) {
@@ -629,9 +629,9 @@ const toggleSound = () => {
 		playSound(ghostSound);
 
 		if (isUpgrade) {
-			if (shop.dataset.prevClassname) {
-				shop.className = shop.dataset.prevClassname;
-				delete shop.dataset.prevClassname;
+			if (shopWrapper.dataset.prevClassname) {
+				shopWrapper.className = shopWrapper.dataset.prevClassname;
+				delete shopWrapper.dataset.prevClassname;
 			}
 
 			if (isTombstone) {
@@ -725,7 +725,7 @@ const toggleSound = () => {
 		}
 	}
 
-	shop.addEventListener('click', (e) => {
+	shopWrapper.addEventListener('click', (e) => {
 		if (
 			e.target.tagName !== 'BUTTON' ||
 			(e.target.classList.contains('ghost') && !game.classList.contains('ghost-unlocked')) ||
@@ -741,7 +741,7 @@ const toggleSound = () => {
 
 		selectedShopItem = e.target;
 
-		shop.querySelector('.selected')?.classList.remove('selected');
+		shopWrapper.querySelector('.selected')?.classList.remove('selected');
 		e.target.classList.add('selected');
 
 		const mode = e.target.dataset.mode || 'build';
@@ -749,21 +749,21 @@ const toggleSound = () => {
 		playSound(buttonSound);
 	});
 
-	shop.addEventListener('mouseover', renderShopDescription);
-	shop.addEventListener('focusin', renderShopDescription);
+	shopWrapper.addEventListener('mouseover', renderShopDescription);
+	shopWrapper.addEventListener('focusin', renderShopDescription);
 
-	shop.addEventListener('mouseout', (e) => {
+	shopWrapper.addEventListener('mouseout', (e) => {
 		if (e.target.tagName !== 'BUTTON' || e.target === selectedShopItem) {
 			return;
 		}
 
 		if (!selectedShopItem) {
-			shop.className = '';
+			shopWrapper.className = '';
 			return;
 		}
 
-		shop.className = selectedShopItem.className;
-		shop.classList.remove('tile','buildable');
+		shopWrapper.className = selectedShopItem.className;
+		shopWrapper.classList.remove('tile','buildable');
 	});
 
 	tutoContainer.addEventListener('click', (e) => {
