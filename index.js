@@ -791,15 +791,17 @@ const toggleSound = () => {
 	let soulflowerAwardClock;
 	let growFlowerClock;
 	function activeFlowers() {
+		const canUpdateValues = !game.classList.contains('tuto-mode') && document.hasFocus();
+
 		soulflowerAwardClock = window.setInterval(() => {
-			if (game.classList.contains('tuto-mode')) {
+			if (!canUpdateValues) {
 				return;
 			}
 			game.updateSoulstoneCount(board.querySelectorAll('.soulflower.built').length);
 		}, 4000);
 
 		growFlowerClock = window.setInterval(() => {
-			if (game.classList.contains('tuto-mode')) {
+			if (!canUpdateValues) {
 				return;
 			}
 
