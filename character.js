@@ -59,7 +59,7 @@ function Character(character) {
 
     const updateCourage = () => {
         const scaryometerValue = character.game.getScaryometerValue();
-        const characterCountBonus = (board.querySelectorAll('[is="Character"]:not(.flee)').length - 1) * 2;
+        const characterCountBonus = parseInt((board.querySelectorAll('[is="Character"]:not(.flee)').length - 1) / 2, 10);
 
         currentCourage += characterCountBonus - scaryometerValue;
 

@@ -912,14 +912,14 @@ const toggleSound = () => {
 	let mainLoopInterval = 5000;
 	let mainLoopClock;
 	function gameMainLoop() {
-		const characterType = game.createdCharacterCount < 10 ? 'boy' : (
-			game.createdCharacterCount < 30 ? CHARACTER_TYPES[JSGLib.random(0, 1)] : (
+		const characterType = game.createdCharacterCount < 30 ? 'boy' : (
+			game.createdCharacterCount < 60 ? CHARACTER_TYPES[JSGLib.random(0, 1)] : (
 				CHARACTER_TYPES[JSGLib.random(0, 2)]
 			)
 		);
 		createCharacter(characterType);
 
-		if (game.createdCharacterCount >= 3 && JSGLib.random(1, 3) === 3) {
+		if (game.createdCharacterCount >= 10 && JSGLib.random(1, 3) === 2) {
 			window.setTimeout(() => createCharacter(characterType), 1000);
 		}
 
