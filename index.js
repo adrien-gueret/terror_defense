@@ -644,6 +644,8 @@ const toggleSound = () => {
 				if (grave.classList.contains('grave') && !grave.classList.contains('upgradable')) {
 					checkIfGraveIsUpgradable(grave, e.target);
 				}
+			} else if (isGrave) {
+				checkGhostLock();
 			}
 		} else if (isGrave) {
 			checkGhostLock();
@@ -686,9 +688,11 @@ const toggleSound = () => {
 	let hasFirstCharacterBeenCreated = false;
 
 	function checkGhostLock() {
-		const graveCount = board.querySelectorAll('.grave.built').length;
-		graveLeftCount.innerHTML = 8 - graveCount;
-		game.classList.toggle('ghost-unlocked', graveCount >= 8);
+		const lvl2GraveCount = board.querySelectorAll('.grave.built.lvl2').length;
+		const lvl3GraveCount = board.querySelectorAll('.grave.built.lvl3').length;
+		const upgradedGraveCount = lvl2GraveCount + lvl3GraveCount;
+		graveLeftCount.innerHTML = 4 - upgradedGraveCount;
+		game.classList.toggle('ghost-unlocked', upgradedGraveCount >= 4);
 	}
 
 	function checkBatLock() {
@@ -876,7 +880,7 @@ const toggleSound = () => {
 	function gameMainLoop() {
 		const characterType = game.createdCharacterCount < 10 ? 'boy' : (
 			game.createdCharacterCount < 30 ? CHARACTER_TYPES[JSGLib.random(0, 1)] : (
-				CHARACTER_TYPES[JSGLib.random(0, 3)]
+				CHARACTER_TYPES[JSGLib.random(0, 2)]
 			)
 		);
 		createCharacter(characterType);
