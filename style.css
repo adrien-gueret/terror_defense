@@ -266,6 +266,17 @@ footer {
     cursor: pointer;
 }
 
+#skipButton {
+    width: auto;
+    top: 8px;
+    position: fixed;
+    right: 4px;
+    z-index: 100;
+    display: none;
+}
+
+.tuto-mode #skipButton { display: block; }
+
 #shopWrapper button { box-sizing: content-box; }
 
 #shopWrapper button:not(.selected):hover {

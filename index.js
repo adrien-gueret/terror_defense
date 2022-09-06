@@ -781,6 +781,17 @@ const toggleSound = () => {
 
 		playSound(buttonSound);
 
+		if (e.target.id === 'skipButton') {
+			game.className = 'tuto-finished';
+			delete game.dataset.tutoCounter;
+
+			activeFlowers();
+
+			mainLoopInterval = 10000;
+			window.setTimeout(gameMainLoop, 30000);
+			return;
+		}
+
 		if (game.classList.contains('end')) {
 			window.location.reload();
 			return;
