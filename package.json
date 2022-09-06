@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "minify": "^9.1.0",
+    "roadroller": "^2.1.0",
+    "zip-a-folder": "^1.1.5"
+  },
+  "scripts": {
+    "build": "node build.mjs"
+  }
+}
