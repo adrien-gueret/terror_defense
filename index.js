@@ -12,6 +12,7 @@ const SHOP_COSTS = {
 	tree: -10,
 	bat: -30,
 	ghost: -75,
+	thunder: -200,
 	tombstone: {
 		lvl1: -20,
 		lvl2: -30,
@@ -64,6 +65,12 @@ const lifeLostSound = (i) => {
 	const n=9e4;
 	if (i > n) return null;
 	return (((i+Math.sin(i/1900)*80)&128)?.05:-.05)*Math.pow(t(i,n),5);
+};
+
+const thunderSound = (i) => {
+	const n=5e4;
+	if (i > n) return null;
+	return ((Math.pow(i+Math.sin(i*0.03)*100,0.6)&20)?0.1:-0.1)*Math.pow(t(i,n),2);
 };
 
 let soundsEnabled = false;
@@ -747,6 +754,23 @@ const toggleSound = () => {
 			return;
 		}
 
+		if (e.target.classList.contains('thunder')) {
+			if (!game.updateSoulstoneCount(SHOP_COSTS.thunder)) {
+				playSound(forbiddenSound);
+				return;
+			}
+
+			playSound(thunderSound);
+			board.classList.add('thunder');
+			window.setTimeout(() => board.classList.remove('thunder'), 600);
+
+			for (let character of board.querySelectorAll('[is="Character"]:not(.flee)')) {
+				character.frightenFromThunder();
+			}
+
+			return;
+		}
+
 		selectedShopItem = e.target;
 
 		shopWrapper.querySelector('.selected')?.classList.remove('selected');
@@ -787,7 +811,6 @@ const toggleSound = () => {
 
 			activeFlowers();
 
-			mainLoopInterval = 10000;
 			window.setTimeout(gameMainLoop, 30000);
 			return;
 		}

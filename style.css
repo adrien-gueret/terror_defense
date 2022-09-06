@@ -133,6 +133,7 @@ jsglib-game:not(.bat-unlocked) #shopWrapper .tile.bat {
 .tile.sound.on { background-position: -16px -80px; }
 .tile.heart { background-position: -32px -80px; }
 .tile.heart.empty { background-position: -48px -80px; opacity: .5; animation: shake 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both; }
+.tile.thunder { background-position: -64px -80px; }
 .tile.ghost { background-position: -16px -64px; }
 .tile.bat { background-position: -48px -64px; }
 .tile.soulstone {
@@ -388,7 +389,7 @@ footer {
     transform: translateY(100px);
 }
 
-[data-mode="remove"] {
+[data-mode="remove"], button.thunder {
     margin-left: 8px;
 }
 
@@ -421,7 +422,8 @@ footer {
 #shopWrapper.grave.lvl1:not(.upgradable) .item-description.grave.lvl1,
 #shopWrapper.grave.lvl1.upgradable .item-description.grave.lvl2,
 #shopWrapper.grave.lvl2.upgradable .item-description.grave.lvl3,
-#shopWrapper.sound .item-description.sound
+#shopWrapper.sound .item-description.sound,
+#shopWrapper.thunder .item-description.thunder
 { display:block; }
 
 .negative, .locked { color: red; }
@@ -478,4 +480,27 @@ footer {
     30%, 50%, 70% { transform: rotate(4deg); }
     80% { transform: rotate(-2deg); }
     90% { transform: rotate(2deg); }
+}
+
+#board.thunder:before {
+    z-index: 999;
+    left: 0;
+    display: block;
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    background-color: #fff;
+    right: 0;
+    opacity: 0;
+    top: 0;
+    bottom: 60px;
+    animation: flash ease-out .56s both 1;
+}
+
+@keyframes flash {
+    0%, 20% { opacity: 0; }
+	40% { opacity: 0.6; }
+    60% { opacity: 0.2; }
+    80% { opacity: 1; } 
+	100% { opacity: 0; }
 }

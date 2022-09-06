@@ -10,7 +10,7 @@ const CHARACTER_CONF = {
 };
 
 function Character(character) {	
-    const { createdCharacterCount = 0 } = character.game;
+    const { createdCharacterCount = 1 } = character.game;
     let fromRightToLeft = JSGLib.random(0, 1) === 1;
     const characterType = character.getAttribute('characterType');
     const { baseSpeed, baseCourage, awardedSoulstones } = CHARACTER_CONF[characterType];
@@ -46,16 +46,33 @@ function Character(character) {
         }
     };
 
+    const renderCourage = () => {
+        character.shadowRoot.querySelector('meter').value = currentCourage;
+
+        if (currentCourage <= 0) {
+            flee();
+            return true;
+        }
+
+        return false;
+    };
+
     const updateCourage = () => {
         const scaryometerValue = character.game.getScaryometerValue();
         const characterCountBonus = (board.querySelectorAll('[is="Character"]:not(.flee)').length - 1) * 2;
 
         currentCourage += characterCountBonus - scaryometerValue;
 
-        character.shadowRoot.querySelector('meter').value = currentCourage;
+        renderCourage();
+    };
 
-        if (currentCourage <= 0) {
-            flee();
+    character.frightenFromThunder = () => {
+        window.clearInterval(clock);
+
+        currentCourage -= parseInt(maxCourage / 2, 10);
+        
+        if (!renderCourage()) {
+            clock = window.setInterval(updateCourage, 1000);
         }
     };
 
