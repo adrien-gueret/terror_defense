@@ -12,7 +12,7 @@ const SHOP_COSTS = {
 	tree: -10,
 	bat: -30,
 	ghost: -75,
-	thunder: -200,
+	thunder: -150,
 	tombstone: {
 		lvl1: -20,
 		lvl2: -30,
