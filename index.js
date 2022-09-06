@@ -571,7 +571,10 @@ const toggleSound = () => {
 				if (game.dataset.tutoCounter >= 3 || flowerCount === 0) {
 					goToTutoStep(3);
 					activeFlowers();
-					tutoClock = window.setTimeout(() => goToTutoStep(4), 60000);
+					tutoClock = window.setTimeout(() => {
+						goToTutoStep(4);
+						tutoClock = window.setTimeout(() => goToTutoStep(5), 60000);
+					}, 60000);
 				}
 			}
 
@@ -598,6 +601,7 @@ const toggleSound = () => {
 
 			if (game.dataset.tutoCounter >= 5) {
 				goToTutoStep(4);
+				tutoClock = window.setTimeout(() => goToTutoStep(5), 60000);
 			}
 		} else  if (game.classList.contains('tuto-step-4')) {
 			if (!classList.contains('tree')) {
