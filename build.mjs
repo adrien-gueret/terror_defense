@@ -86,8 +86,22 @@ import { zip, COMPRESSION_LEVEL  } from 'zip-a-folder';
     try {
         await execSync('ect.exe -9 -zip ./entry.zip', { env: process.env });
     } catch(e) {
-        console.warn('Cannot compress zip, please be sure ect.exe is installed and available globally');
+        console.warn('⚠ Cannot compress zip, please be sure ect.exe is installed and available from global scope');
     }
 
-    console.log('Done');
+    console.log('Get entry size...');
+    const { size } = fs.statSync('./entry.zip');
+
+    console.log('Entry size: ' + size + ' bytes');
+
+    const JS13K_LIMIT_SIZE = 13312;
+
+    if (size > JS13K_LIMIT_SIZE) {
+        console.error('❌ File is '+ (size - JS13K_LIMIT_SIZE) +'bytes too big!');
+    } else {
+        console.log('✅ All good!');
+    }
+
+    console.log('');
+    console.log('Entry generated');
 })();

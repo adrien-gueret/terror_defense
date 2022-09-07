@@ -12,7 +12,7 @@ const SHOP_COSTS = {
 	tree: -10,
 	bat: -30,
 	ghost: -75,
-	thunder: -150,
+	thunder: -100,
 	tombstone: {
 		lvl1: -20,
 		lvl2: -30,
@@ -244,6 +244,18 @@ const toggleSound = () => {
 		}, timeout);
 	};
 
+	const triggerThunder = () => {
+		playSound(thunderSound);
+		board.classList.add('thunder');
+		window.setTimeout(() => board.classList.remove('thunder'), 600);
+
+		for (let character of board.querySelectorAll('[is="Character"]:not(.flee)')) {
+			if (character.frightenFromThunder) {
+				character.frightenFromThunder();
+			}
+		}
+	};
+
 	const tileImage = new Image();
 	tileImage.src = './images/tiles.png';
 
@@ -315,6 +327,8 @@ const toggleSound = () => {
 			window.clearInterval(soulflowerAwardClock);
 			window.clearInterval(growFlowerClock);
 			window.clearTimeout(mainLoopClock);
+		} else {
+			window.setTimeout(triggerThunder, 200);
 		}
 	};
 
@@ -767,13 +781,9 @@ const toggleSound = () => {
 				return;
 			}
 
-			playSound(thunderSound);
-			board.classList.add('thunder');
-			window.setTimeout(() => board.classList.remove('thunder'), 600);
-
-			for (let character of board.querySelectorAll('[is="Character"]:not(.flee)')) {
-				character.frightenFromThunder();
-			}
+			triggerThunder();
+			SHOP_COSTS.thunder -= 20;
+			thunderItemCost.innerHTML = Math.abs(SHOP_COSTS.thunder);
 
 			return;
 		}
