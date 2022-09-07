@@ -265,7 +265,7 @@ const toggleSound = () => {
 		if (totalLifes <= 0) {
 			const canvas = document.createElement('canvas');
 			canvas.width = 960;
-			canvas.height = 640;
+			canvas.height = 684;
 			const ctx = canvas.getContext('2d');
 			ctx.imageSmoothingEnabled = false;
 
@@ -289,6 +289,13 @@ const toggleSound = () => {
 						destX, destY, TILE_SIZE*2, TILE_SIZE*2
 					);
 				}
+
+				ctx.fillStyle = '#111';
+				ctx.fillRect(0, 640, 960, 44);
+				ctx.drawImage(tileImage, 0, 64, TILE_SIZE, TILE_SIZE, 0, 651, TILE_SIZE*2, TILE_SIZE*2);
+				ctx.fillStyle = '#fff';
+				ctx.font = '26px monospace';
+  				ctx.fillText('x ' + game.getScaryometerValue(), TILE_SIZE*2 + 4, 669);
 
 				pictureLink.href = canvas.toDataURL();
 
