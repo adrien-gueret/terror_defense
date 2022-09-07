@@ -79,7 +79,7 @@ import { zip, COMPRESSION_LEVEL  } from 'zip-a-folder';
     fs.cpSync('./images/tiles.png', './entry/t.png');
     fs.writeFileSync( './entry/index.html', `<script>${packedCode.firstLine + packedCode.secondLine}</script>`, { encoding: 'utf8' });
 
-    console.log('Zip entry older...');
+    console.log('Zip entry folder...');
     await zip('./entry', './entry.zip', {compression: COMPRESSION_LEVEL.high});
 
     console.log('Compress zip...')
