@@ -47,6 +47,7 @@ function Character(character) {
     };
 
     const renderCourage = () => {
+        currentCourage = Math.min(maxCourage, Math.max(0, currentCourage));
         character.shadowRoot.querySelector('meter').value = currentCourage;
 
         if (currentCourage <= 0) {
