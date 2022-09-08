@@ -742,7 +742,7 @@ const toggleSound = () => {
 			hasFirstCharacterBeenCreated = true;
 
 			for (let tile of board.querySelectorAll('.tombstone')) {
-				prepareTileToBeUpgradable(tile, JSGLib.random(20000, 40000));
+				prepareTileToBeUpgradable(tile, JSGLib.random(90000, 100000));
 			}
 
 			window.setTimeout(() => {
