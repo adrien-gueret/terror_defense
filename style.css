@@ -393,6 +393,10 @@ footer {
     margin-left: 8px;
 }
 
+.stepEnd button {
+    width: auto;
+}
+
 #shopWrapper button.selected {
     border-color: #eee;				
 }
