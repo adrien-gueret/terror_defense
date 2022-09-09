@@ -864,7 +864,7 @@ const toggleSound = () => {
 				return;
 			}
 
-			const emptyTiles = board.querySelectorAll('.tile.none.buildable');
+			const emptyTiles = board.querySelectorAll('.tile.none.buildable:not(.temp)');
 			const emptyTilesCount = emptyTiles.length;
 	
 			if (emptyTilesCount === 0) {
